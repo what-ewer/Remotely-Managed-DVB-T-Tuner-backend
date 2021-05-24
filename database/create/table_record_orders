@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS record_orders (
+    id integer NOT NULL CONSTRAINT record_orders_pk PRIMARY KEY,
+    tuner_id integer NOT NULL,
+    channel_id integer NOT NULL,
+    start bigint NOT NULL,
+    stop bigint NOT NULL,
+    CONSTRAINT record_orders_tuners FOREIGN KEY (tuner_id)
+    REFERENCES tuners (id)
+);
