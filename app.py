@@ -29,8 +29,11 @@ def tuner_settings():
 @app.route("/tuner/orders", methods=["GET"])
 def tuner_orders():
     id = request.args.get("id")
-    res = tuner.get_orders(id)
-    return res
+    return (
+        tuner.get_orders(id)
+        if id is not None
+        else Response("Provide tuner id in args", status=400)
+    )
 
 
 @app.route("/tuner/recorded", methods=["POST"])  # TODO (priority - *)
@@ -53,9 +56,15 @@ def client_heartbeat():
     return "Heartbeat"
 
 
-@app.route("/client/orders", methods=["POST"])  # TODO (priority - ***)
+@app.route("/client/orders", methods=["POST"])
 def client_orders():
-    return "Orders"
+    id = request.args.get("id")
+    orders = request.data
+    return (
+        client.post_orders(id, orders)
+        if id is not None and orders is not b""
+        else Response("Provide tuner id in args and/or orders in body", status=400)
+    )
 
 
 @app.route("/client/channels", methods=["GET"])  # TODO (priority - **)
@@ -64,13 +73,13 @@ def client_channels():
 
 
 # temporary endpoints for some features
-@app.route("/generate/tables", methods=["GET"])  # TODO (priority - **)
-def generate_tables():
-    DBManager.setup_tables()
-    return "Tables generated"
-
-
-@app.route("/generate/data", methods=["GET"])  # TODO (priority - **)
+@app.route("/generate/database", methods=["GET"])
 def generate_data():
-    DBManager.generate_data()
+    db_manager.generate_db_without_data()
     return "Data generated"
+
+
+@app.route("/generate/example", methods=["GET"])
+def generate_all():
+    db_manager.generate_db_with_data()
+    return "Generated tables and data"

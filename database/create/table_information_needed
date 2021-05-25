@@ -1,4 +1,4 @@
-CREATE TABLE information_needed (
+CREATE TABLE IF NOT EXISTS information_needed (
     tuner_id integer NOT NULL CONSTRAINT information_needed_pk PRIMARY KEY,
     changed_recording_order_list boolean NOT NULL,
     changed_settings boolean NOT NULL,

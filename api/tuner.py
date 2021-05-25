@@ -8,13 +8,17 @@ class TunerAPI:
         self.db_manager = db_manager
 
     def get_orders(self, id):
-        query = f"SELECT channel_id, start, stop FROM record_orders \
+        query = f"SELECT channel_id, start, end FROM record_orders \
             WHERE tuner_id = {id}"
 
         ts = datetime.datetime.now().timestamp()
-        orders = self.db_manager.execute_query(query)
+        try:
+            orders = self.db_manager.execute_query(query)
+        except Exception as exc:
+            return Response(str(exc), status=500)
+
         result = [
-            {"channel_id": o[0], "start": o[1], "stop": o[2]}
+            {"channel_id": str(o[0]), "start": o[1], "end": o[2]}
             for o in orders
             if o[1] > ts
         ]

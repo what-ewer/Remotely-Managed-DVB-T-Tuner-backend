@@ -1,4 +1,4 @@
-# Zdalnie zarządzany tuner telewizji cyfrowej - backend 
+# Remotely-managed DVB-T Tuner - backend 
 
 ## Database Scheme
 ![db-scheme](documentation/dbscheme.png)
@@ -19,8 +19,8 @@ Currently avalible + planned endpoints
 | `/tuner/channels?id=_`    | POST  | post channels of a tuner                      | ❌
 | **client endpoints**      |       |                                               | 
 | `/client/heartbeat?id=_`  | GET   | get information about tuner                   | ❌
-| `/tuner/orders?id=_`      | POST  | post orders for a tuner                       | ❌
+| `/tuner/orders?id=_`      | POST  | post orders for a tuner                       | ✅
 | `/tuner/channels?id=_`    | GET   | get channels from a tuner                     | ❌
 | **other endpoints**       |       |                                               |         
-| `/generate/tables`        | GET   | generate tables for database                  | ✅
-| `/generate/data`          | GET   | generate some example data for database       | ✅
+| `/generate/database`      | GET   | generate tables for database                  | ✅
+| `/generate/example`       | GET   | generate tables + data for database           | ✅

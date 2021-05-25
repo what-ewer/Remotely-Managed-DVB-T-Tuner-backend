@@ -4,38 +4,40 @@ from os.path import isfile, join
 
 
 class DBManager:
-    def __init__(self):
-        # self.con = sqlite3.connect("rmdvbt.db")
-        pass
+    def _drop_database(self):
+        file = open("database/utility/drop_all", mode="r")
+        drop_query = file.readlines()
+        file.close()
+        self.execute_multiple_queries(drop_query)
 
-    @staticmethod
-    def setup_tables():
-        con = sqlite3.connect("rmdvbt.db")
-        cur = con.cursor()
+    def _setup_tables(self):
         table_creates = [
             join("database/create/", f)
             for f in listdir("database/create/")
             if isfile(join("database/create/", f))
         ]
+        queries = []
         for filename in table_creates:
             file = open(filename, mode="r")
-            create_query = file.read()
-            cur.execute(create_query)
-            con.commit()
-        con.close()
+            queries.append(file.read())
+            file.close()
+
+        self.execute_multiple_queries(queries)
+
+    def _generate_data(self):
+        file = open("database/utility/example_data", mode="r")
+        create_query = file.readlines()
+        self.execute_multiple_queries(create_query)
         file.close()
 
-    @staticmethod
-    def generate_data():
-        con = sqlite3.connect("rmdvbt.db")
-        cur = con.cursor()
-        file = open("database/data/example_data", mode="r")
-        create_query = file.readlines()
-        for query in create_query:
-            cur.execute(query)
-            con.commit()
-        con.close()
-        file.close()
+    def generate_db_with_data(self):
+        self._drop_database()
+        self._setup_tables()
+        self._generate_data()
+
+    def generate_db_without_data(self):
+        self._drop_database()
+        self._setup_tables()
 
     def execute_query(self, query):
         con = sqlite3.connect("rmdvbt.db")
@@ -45,4 +47,8 @@ class DBManager:
         con.commit()
         cur.close()
         con.close
+        return res
+
+    def execute_multiple_queries(self, queries):
+        res = [self.execute_query(query) for query in queries]
         return res
