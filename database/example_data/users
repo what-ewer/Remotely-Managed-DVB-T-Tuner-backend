@@ -1,5 +1,0 @@
-INSERT INTO users
-('admin', 'admin')
-
-INSERT INTO users
-('user', 'user')

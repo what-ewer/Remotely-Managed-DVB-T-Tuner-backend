@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS recorded_files (
-    id integer NOT NULL CONSTRAINT recorded_files_pk PRIMARY KEY,
+    id integer NOT NULL CONSTRAINT recorded_files_pk PRIMARY KEY AUTOINCREMENT,
     tuner_id integer NOT NULL,
     program_name integer NOT NULL,
     record_size integer NOT NULL,
