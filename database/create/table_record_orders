@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS record_orders (
     id integer NOT NULL CONSTRAINT record_orders_pk PRIMARY KEY AUTOINCREMENT,
     tuner_id integer NOT NULL,
-    channel_id integer NOT NULL,
+    channel_id varchar(255) NOT NULL,
     start bigint NOT NULL,
     end bigint NOT NULL,
     CONSTRAINT record_orders_tuners FOREIGN KEY (tuner_id)
