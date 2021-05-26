@@ -110,7 +110,7 @@ def tuner_settings():
     )
 
 
-@app.route("/settings", methods=["POST"]) 
+@app.route("/settings", methods=["POST"])
 def client_settings():
     id = request.args.get("id")
     settings = request.data
@@ -121,7 +121,7 @@ def client_settings():
     )
 
 
-@app.route("/recorded", methods=["POST"]) 
+@app.route("/recorded", methods=["POST"])
 def tuner_recorded():
     id = request.args.get("id")
     recorded = request.data

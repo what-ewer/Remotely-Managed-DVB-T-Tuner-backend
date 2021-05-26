@@ -83,7 +83,6 @@ class TunerAPI:
                     return Response(str(exc), status=500)
         return Response("successfully posted recorded", status=200)
 
-
     def post_status(self, id, status):
         s = json.loads(status)
         try:

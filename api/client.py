@@ -72,7 +72,6 @@ class ClientAPI:
         ]
         return Response(json.dumps(result), status=200)
 
-        
     def post_settings(self, id, settings):
         r = json.loads(settings)
 
