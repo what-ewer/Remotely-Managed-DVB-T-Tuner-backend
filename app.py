@@ -1,6 +1,15 @@
 from api.tuner import TunerAPI
 from flask import Flask, request, Response
 from database.db_manager import DBManager
+from database.db_model import (
+    JsonConverter,
+    RecordOrders,
+    Channel,
+    EPG,
+    TunerStatus,
+    Settings,
+    RecordedFiles,
+)
 from api.tuner import TunerAPI
 from api.client import ClientAPI
 
@@ -16,34 +25,32 @@ def index():
     return "Index"
 
 
+@app.route("/orders", methods=["POST"])
+def client_orders():
+    id = request.args.get("id")
+    orders = JsonConverter.convert_all(request.data, RecordOrders)
+    return (
+        client.post_orders(id, orders)
+        if id and orders
+        else Response("Provide tuner id in args and orders in body", status=400)
+    )
+
+
 @app.route("/orders", methods=["GET"])
 def tuner_orders():
     id = request.args.get("id")
     return (
-        tuner.get_orders(id)
-        if id is not None
-        else Response("Provide tuner id in args", status=400)
-    )
-
-
-@app.route("/orders", methods=["POST"])
-def client_orders():
-    id = request.args.get("id")
-    orders = request.data
-    return (
-        client.post_orders(id, orders)
-        if id is not None and orders != b""
-        else Response("Provide tuner id in args and orders in body", status=400)
+        tuner.get_orders(id) if id else Response("Provide tuner id in args", status=400)
     )
 
 
 @app.route("/channels", methods=["POST"])
 def tuner_channels():
     id = request.args.get("id")
-    channels = request.data
+    channels = JsonConverter.check_json(request.data, Channel)
     return (
         tuner.post_channels(id, channels)
-        if id is not None and channels != b""
+        if id and channels
         else Response("Provide tuner id in args", status=400)
     )
 
@@ -53,7 +60,7 @@ def client_channels():
     id = request.args.get("id")
     return (
         client.get_channels(id)
-        if id is not None
+        if id
         else Response("Provide tuner id in args", status=400)
     )
 
@@ -61,10 +68,10 @@ def client_channels():
 @app.route("/epg", methods=["POST"])
 def tuner_epg():
     id = request.args.get("id")
-    channels = request.data
+    epg = JsonConverter.check_json(request.data, EPG)
     return (
-        tuner.post_epg(id, channels)
-        if id is not None and channels != b""
+        tuner.post_epg(id, epg)
+        if id and epg
         else Response("Provide tuner id in args", status=400)
     )
 
@@ -74,7 +81,7 @@ def client_epg():
     id = request.args.get("id")
     return (
         client.get_epg(id)
-        if id is not None
+        if id
         else Response("Provide tuner id in args and orders in body", status=400)
     )
 
@@ -82,10 +89,10 @@ def client_epg():
 @app.route("/heartbeat", methods=["POST"])
 def tuner_heartbeat():
     id = request.args.get("id")
-    status = request.data
+    status = JsonConverter.convert(request.data, TunerStatus)
     return (
         tuner.post_status(id, status)
-        if id is not None and status != b""
+        if id and status
         else Response("Provide tuner id in args and status in body", status=400)
     )
 
@@ -95,8 +102,19 @@ def client_heartbeat():
     id = request.args.get("id")
     return (
         client.get_status(id)
-        if id is not None
+        if id
         else Response("Provide tuner id in args", status=400)
+    )
+
+
+@app.route("/settings", methods=["POST"])
+def client_settings():
+    id = request.args.get("id")
+    settings = JsonConverter.convert(request.data, Settings)
+    return (
+        client.post_settings(id, settings)
+        if id and settings
+        else Response("Provide tuner id in args and settings in body", status=400)
     )
 
 
@@ -105,29 +123,18 @@ def tuner_settings():
     id = request.args.get("id")
     return (
         tuner.get_settings(id)
-        if id is not None
+        if id
         else Response("Provide tuner id in args", status=400)
-    )
-
-
-@app.route("/settings", methods=["POST"])
-def client_settings():
-    id = request.args.get("id")
-    settings = request.data
-    return (
-        client.post_settings(id, settings)
-        if id is not None and settings != b""
-        else Response("Provide tuner id in args and settings in body", status=400)
     )
 
 
 @app.route("/recorded", methods=["POST"])
 def tuner_recorded():
     id = request.args.get("id")
-    recorded = request.data
+    recorded = JsonConverter.convert_all(request.data, RecordedFiles)
     return (
         tuner.post_recorded(id, recorded)
-        if id is not None and recorded != b""
+        if id and recorded
         else Response("Provide tuner id in args and recored in body", status=400)
     )
 
@@ -137,7 +144,7 @@ def client_recorded():
     id = request.args.get("id")
     return (
         client.get_recorded(id)
-        if id is not None
+        if id
         else Response("Provide tuner id in args", status=400)
     )
 

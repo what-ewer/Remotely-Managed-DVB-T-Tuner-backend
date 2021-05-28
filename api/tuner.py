@@ -39,11 +39,10 @@ class TunerAPI:
         ]
         return Response(json.dumps(result), status=200)
 
-    def post_channels(self, id, channels):  # TODO - kontrola czy json jest git
-        json_channels = json.loads(channels)
+    def post_channels(self, id, channels):
 
         query = f"""UPDATE tuners
-        SET channels = "{json_channels}"
+        SET channels = "{channels}"
         WHERE id = {id}"""
 
         try:
@@ -53,11 +52,10 @@ class TunerAPI:
 
         return Response("successfully updated channels", status=200)
 
-    def post_epg(self, id, epg):  # TODO - kontrola czy json jest git
-        json_epg = json.loads(epg)
+    def post_epg(self, id, epg):
 
         query = f"""UPDATE tuners
-        SET epg = "{json_epg}"
+        SET epg = "{epg}"
         WHERE id = {id}"""
 
         try:
@@ -68,12 +66,10 @@ class TunerAPI:
         return Response("successfully updated epg", status=200)
 
     def post_recorded(self, id, recorded):
-        json_recorded = json.loads(recorded)
-
-        for o in json_recorded:
+        for o in recorded:
             try:
                 query = f"""INSERT INTO recorded_files(tuner_id, program_name, record_size) \
-                    VALUES({id}, '{o['program_name']}', {o['record_size']})"""
+                    VALUES({id}, '{o.program_name}', {o.record_size})"""
             except:
                 return Response("Wrong record recorded list", status=400)
             else:
@@ -84,10 +80,9 @@ class TunerAPI:
         return Response("successfully posted recorded", status=200)
 
     def post_status(self, id, status):
-        s = json.loads(status)
         try:
             query = f"""INSERT OR REPLACE INTO tuner_status(tuner_id, free_space, is_recording, current_recording_time, current_recording_size)
-                        VALUES({id}, {s[0]['free_space']}, {s[0]['is_recording']}, {s[0]['current_recording_time']}, {s[0]['current_recording_size']})"""
+                        VALUES({id}, {status.free_space}, {status.is_recording}, {status.current_recording_time}, {status.current_recording_size})"""
         except:
             return Response("Wrong hearbeat list", status=400)
         else:

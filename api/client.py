@@ -7,12 +7,10 @@ class ClientAPI:
         self.db_manager = db_manager
 
     def post_orders(self, id, orders):
-        json_orders = json.loads(orders)
-
-        for o in json_orders:
+        for o in orders:
             try:
                 query = f"""INSERT INTO record_orders(tuner_id, channel_id, start, end) \
-                    VALUES({id}, {o['channel_id']}, {o['start']}, {o['end']})"""
+                    VALUES({id}, {o.channel_id}, {o.start}, {o.end})"""
             except:
                 return Response("Wrong record orders list", status=400)
             else:
@@ -73,11 +71,9 @@ class ClientAPI:
         return Response(json.dumps(result), status=200)
 
     def post_settings(self, id, settings):
-        r = json.loads(settings)
-
         try:
             query = f"""INSERT OR REPLACE INTO settings(tuner_id, recording_location, tvh_username, tvh_password)
-                        VALUES({id}, '{r[0]['recording_location']}', '{r[0]['tvh_username']}', '{r[0]['tvh_password']}')"""
+                        VALUES({id}, '{settings.recording_location}', '{settings.tvh_username}', '{settings.tvh_password}')"""
         except:
             return Response("Wrong settings list", status=400)
         else:
