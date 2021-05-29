@@ -1,5 +1,21 @@
 # Remotely-managed DVB-T Tuner - backend 
 
+## Project structure
+```
+.
+|─ api/                 
+  |─ client.py
+  |─ tuner.py
+|─ database/
+  |─ create/
+  |─ utility/
+  |─ db_manager.py
+  |─ db_model.py
+|─ documentation/
+|─ misc/
+|─ app.py
+```
+
 ## Local development
 ```python
 pip install -r requirements.txt
@@ -25,14 +41,14 @@ Currently avalible + planned endpoints
 | endpoint                  | type  | description                                       | implemented
 | -                         | -     | -                                                 |  - 
 | **tuner endpoints**       |       |                                                   | 
-| `/hearbeat?id=_`          | POST  | post information about tuner                      | ✅
+| `/status?id=_`            | POST  | post information about tuner                      | ✅
 | `/settings?id=_`          | GET   | get settings list for tuner                       | ✅
 | `/orders?id=_`            | GET   | get a list of orders for tuner                    | ✅
 | `/recorded?id=_`          | POST  | post a list of already recorded show for tuner    | ✅
 | `/epg?id=_`               | POST  | post EPG of a tuner                               | ✅
 | `/channels?id=_`          | POST  | post channels of a tuner                          | ✅
 | **client endpoints**      |       |                                                   | 
-| `/heartbeat?id=_`         | GET   | get information about tuner                       | ✅
+| `/status?id=_`            | GET   | get information about tuner                       | ✅
 | `/settings?id=_`          | POST  | post settings list for tuner                      | ✅
 | `/orders?id=_`            | POST  | post orders for a tuner                           | ✅
 | `/recorded?id=_`          | GET   | get a list of already recorded show for tuner     | ✅

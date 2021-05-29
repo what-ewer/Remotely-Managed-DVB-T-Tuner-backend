@@ -26,7 +26,7 @@ class ClientAPI:
         except Exception as exc:
             return Response(str(exc), status=500)
         res = res[0][0]
-        return Response(res, status=200)
+        return Response(res, status=200, mimetype='json')
 
     def get_channels(self, id):
         query = f"SELECT channels FROM tuners \
@@ -55,7 +55,7 @@ class ClientAPI:
             }
             for s in status
         ]
-        return Response(json.dumps(result), status=200)
+        return Response(json.dumps(result), status=200, mimetype='json')
 
     def get_recorded(self, id):
         query = f"""SELECT program_name, record_size FROM recorded_files
@@ -68,7 +68,7 @@ class ClientAPI:
         result = [
             {"program_name": str(r[0]), "record_size": str(r[1])} for r in recorded
         ]
-        return Response(json.dumps(result), status=200)
+        return Response(json.dumps(result), status=200, mimetype='json')
 
     def post_settings(self, id, settings):
         try:

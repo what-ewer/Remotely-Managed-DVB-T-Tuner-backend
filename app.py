@@ -51,7 +51,7 @@ def tuner_channels():
     return (
         tuner.post_channels(id, channels)
         if id and channels
-        else Response("Provide tuner id in args", status=400)
+        else Response("Provide tuner id in args and channels in body", status=400)
     )
 
 
@@ -72,7 +72,7 @@ def tuner_epg():
     return (
         tuner.post_epg(id, epg)
         if id and epg
-        else Response("Provide tuner id in args", status=400)
+        else Response("Provide tuner id in args and orders in body", status=400)
     )
 
 
@@ -82,12 +82,12 @@ def client_epg():
     return (
         client.get_epg(id)
         if id
-        else Response("Provide tuner id in args and orders in body", status=400)
+        else Response("Provide tuner id in args", status=400)
     )
 
 
-@app.route("/heartbeat", methods=["POST"])
-def tuner_heartbeat():
+@app.route("/status", methods=["POST"])
+def tuner_status():
     id = request.args.get("id")
     status = JsonConverter.convert(request.data, TunerStatus)
     return (
@@ -97,8 +97,8 @@ def tuner_heartbeat():
     )
 
 
-@app.route("/heartbeat", methods=["GET"])
-def client_heartbeat():
+@app.route("/status", methods=["GET"])
+def client_status():
     id = request.args.get("id")
     return (
         client.get_status(id)

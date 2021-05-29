@@ -23,7 +23,7 @@ class TunerAPI:
             if o[1] > ts
         ]
 
-        return Response(json.dumps(result), status=200)
+        return Response(json.dumps(result), status=200, mimetype='json')
 
     def get_settings(self, id):
         query = f"""SELECT recording_location, tvh_username, tvh_password FROM settings
@@ -37,12 +37,12 @@ class TunerAPI:
             {"recording_location": s[0], "tvh_username": s[1], "tvh_password": s[2]}
             for s in settings
         ]
-        return Response(json.dumps(result), status=200)
+        return Response(json.dumps(result), status=200, mimetype='json')
 
     def post_channels(self, id, channels):
 
         query = f"""UPDATE tuners
-        SET channels = "{channels}"
+        SET channels = '{json.dumps(channels)}'
         WHERE id = {id}"""
 
         try:
@@ -55,7 +55,7 @@ class TunerAPI:
     def post_epg(self, id, epg):
 
         query = f"""UPDATE tuners
-        SET epg = "{epg}"
+        SET epg = '{json.dumps(epg)}'
         WHERE id = {id}"""
 
         try:
