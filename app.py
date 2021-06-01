@@ -29,19 +29,23 @@ def index():
 def client_orders():
     id = request.args.get("id")
     orders = JsonConverter.convert_all(request.data, RecordOrders)
-    return (
-        client.post_orders(id, orders)
-        if id and orders
-        else Response("Provide tuner id in args and orders in body", status=400)
-    )
+    if id and orders:
+        response = client.post_orders(id, orders)
+    else:
+        response = Response("Provide tuner id in args and orders in body", status=400)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 
 @app.route("/orders", methods=["GET"])
 def tuner_orders():
     id = request.args.get("id")
-    return (
-        tuner.get_orders(id) if id else Response("Provide tuner id in args", status=400)
-    )
+    if id:
+        response = tuner.get_orders(id)
+    else:
+        response = Response("Provide tuner id in args", status=400)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 
 @app.route("/channels", methods=["POST"])
