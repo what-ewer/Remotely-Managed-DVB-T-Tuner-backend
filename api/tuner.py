@@ -53,9 +53,11 @@ class TunerAPI:
         return Response("successfully updated channels", status=200)
 
     def post_epg(self, id, epg):
-
+        
+        epg_dumped = json.dumps(epg)
+        epg_dumped = epg_dumped.replace("\'", "\'\'")
         query = f"""UPDATE tuners
-        SET epg = '{json.dumps(epg)}'
+        SET epg = '{epg_dumped}'
         WHERE id = {id}"""
 
         try:
