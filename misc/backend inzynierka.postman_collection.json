@@ -6,13 +6,49 @@
 	},
 	"item": [
 		{
+			"name": "DATABASE - only tables",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{server}}/generate/database",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"generate",
+						"database"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DATABASE - with data",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{server}}/generate/database",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"generate",
+						"database"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "post orders",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "[{\"channel_id\": 7, \"start\": 1722243800, \"end\": 1722245600}]\r\n"
+					"raw": "[{\"channel_id\": \"testChannelName\", \"start\": 1722243800, \"end\": 1722245600}]\r\n"
 				},
 				"url": {
 					"raw": "{{server}}/orders?id=1",
@@ -162,7 +198,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"recording_location\": \"xd\", \"tvh_username\": \"xddd\", \"tvh_password\": \"sdadsa\"}"
+					"raw": "{\"recording_location\": \"testlocation\", \"tvh_username\": \"username1\", \"tvh_password\": \"pwd222\"}"
 				},
 				"url": {
 					"raw": "{{server}}/settings?id=1",
