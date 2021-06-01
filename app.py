@@ -79,11 +79,12 @@ def tuner_epg():
 @app.route("/epg", methods=["GET"])
 def client_epg():
     id = request.args.get("id")
-    return (
-        client.get_epg(id)
-        if id
-        else Response("Provide tuner id in args", status=400)
-    )
+    if id:
+        response = client.get_epg(id)
+    else:
+        response = Response("Provide tuner id in args", status=400)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 
 @app.route("/status", methods=["POST"])
