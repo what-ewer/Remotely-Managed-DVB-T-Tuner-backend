@@ -9,8 +9,8 @@ class ClientAPI:
     def post_orders(self, id, orders):
         for o in orders:
             try:
-                query = f"""INSERT INTO record_orders(tuner_id, channel_id, start, end) \
-                    VALUES({id}, '{o.channel_id}', {o.start}, {o.end})"""
+                query = f"""INSERT INTO record_orders(tuner_id, channelUuid, start, stop, channelName, title, subtitle, summary, description, favorite, alreadySaved) \
+                    VALUES({id}, '{o.channelUuid}', {o.start}, {o.stop}, '{o.channelName}', '{o.title}', '{o.subtitle}', '{o.summary}', '{o.description}', '{o.favorite}', '{o.alreadySaved}')"""
             except:
                 return Response("Wrong record orders list", status=400)
             else:

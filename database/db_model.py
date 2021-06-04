@@ -80,10 +80,18 @@ class InformationNeeded:
 
 
 class RecordOrders:
-    def __init__(self, channel_id, start, end, **kwargs):
-        self.channel_id = channel_id
+    def __init__(self, channelUuid, start, stop, channelName, title, subtitle, summary, description, favorite, alreadySaved, **kwargs):
+        self.channelUuid = channelUuid
         self.start = start
-        self.end = end
+        self.stop = stop
+        self.channelName = channelName
+        self.title = title
+        self.subtitle = subtitle
+        self.summary = summary
+        self.summary = summary
+        self.description = description
+        self.alreadySaved = alreadySaved
+        self.favorite = favorite
 
 
 class User:

@@ -17,7 +17,7 @@ class TunerAPI:
             return Response(str(exc), status=500)
 
         result = [
-            {"channelUuid": str(o[0]), "start": o[1], "stop": o[2], "channelName": str(o[3]), "title": str(o[4]), "subtitle": str(o[5]), "summary": str(o[6]), "description": str(o[7]), "favorite": bool(o[8]), "alreadySaved": bool(o[9])}
+            {"channelUuid": str(o[0]), "start": o[1], "stop": o[2], "channelName": str(o[3]), "title": str(o[4]), "subtitle": str(o[5]), "summary": str(o[6]), "description": str(o[7]), "favorite": o[8], "alreadySaved": o[9]}
             for o in orders
             if o[1] > ts
         ]
