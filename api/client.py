@@ -10,7 +10,7 @@ class ClientAPI:
         for o in orders:
             try:
                 query = f"""INSERT INTO record_orders(tuner_id, channel_id, start, end) \
-                    VALUES({id}, {o.channel_id}, {o.start}, {o.end})"""
+                    VALUES({id}, '{o.channel_id}', {o.start}, {o.end})"""
             except:
                 return Response("Wrong record orders list", status=400)
             else:
