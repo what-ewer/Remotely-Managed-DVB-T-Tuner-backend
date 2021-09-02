@@ -20,7 +20,7 @@ class TunerAPI:
         result = [
             {"channel_id": str(o[0]), "start": o[1], "end": o[2]}
             for o in orders
-            if o[1] > ts
+            if o[2] > ts  # o[2] includes started programs that didn't end yet, 0[1] returns only not started
         ]
 
         return Response(json.dumps(result), status=200, mimetype='json')
@@ -53,7 +53,7 @@ class TunerAPI:
         return Response("successfully updated channels", status=200)
 
     def post_epg(self, id, epg):
-        
+
         epg_dumped = json.dumps(epg)
         epg_dumped = epg_dumped.replace("\'", "\'\'")
         query = f"""UPDATE tuners
