@@ -156,7 +156,7 @@ def generate_data():
     return "Data generated"
 
 
-@app.route("/generate/example", methods=["GET"])
+@app.route("/generate/example", methods=["POST"])
 def generate_all():
     db_manager.generate_db_with_data()
     return "Generated tables and data"
