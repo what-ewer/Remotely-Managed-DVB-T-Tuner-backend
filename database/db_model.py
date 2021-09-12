@@ -129,6 +129,8 @@ class EPG:
 
 
 class Channel:
-    def __init__(self, id, name, **kwargs):
+    def __init__(self, id, name, multiplex_id, multiplex_name, **kwargs):
         self.id = id
         self.name = name
+        self.multiplex_id = multiplex_id
+        self.multiplex_name = multiplex_name
