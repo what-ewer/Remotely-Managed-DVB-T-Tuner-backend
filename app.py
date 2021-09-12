@@ -150,7 +150,7 @@ def client_recorded():
 
 
 # temporary endpoints for some features
-@app.route("/generate/database", methods=["GET"])
+@app.route("/generate/database", methods=["POST"])
 def generate_data():
     db_manager.generate_db_without_data()
     return "Data generated"
