@@ -59,9 +59,12 @@ class Settings:
 
 
 class RecordedFiles:
-    def __init__(self, program_name, record_size, **kwargs):
+    def __init__(self, channel_id, program_name, record_size, start, end, **kwargs):
         self.program_name = program_name
+        self.channel_id = channel_id
         self.record_size = record_size
+        self.start = start
+        self.end = end
 
 
 class InformationNeeded:
