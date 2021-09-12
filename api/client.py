@@ -19,6 +19,18 @@ class ClientAPI:
                 except Exception as exc:
                     return Response(str(exc), status=500)
         return Response("successfully posted orders", status=200)
+    
+    def delete_orders(self, tuner_id, order_id):
+        try:
+            query = f"""DELETE FROM record_orders WHERE tuner_id = {tuner_id} and id = {order_id}"""
+        except Exception as exc:
+            return Response(str(exc), status=500)
+        else:
+            try:
+                self.db_manager.execute_query(query)
+            except Exception as exc:
+                return Response(str(exc), status=500)
+        return Response("successfully deleted order", status=200)
 
     def get_tuner_info(self, query):
         try:

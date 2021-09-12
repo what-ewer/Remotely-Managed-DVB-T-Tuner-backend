@@ -44,6 +44,14 @@ def tuner_orders():
     )
 
 
+@app.route("/orders/<order_id>", methods=["DELETE"])
+def delete_orders(order_id):
+    tuner_id = request.args.get("tuner_id")
+    return (
+        client.delete_orders(tuner_id, order_id) if (tuner_id and order_id) else Response("Provide tuner id in args", status=400)
+    )
+
+
 @app.route("/channels", methods=["POST"])
 def tuner_channels():
     id = request.args.get("id")
