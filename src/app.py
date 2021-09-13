@@ -1,7 +1,6 @@
-from api.tuner import TunerAPI
 from flask import Flask, request, Response
-from database.db_manager import DBManager
-from database.db_model import (
+from src.database.db_manager import DBManager
+from src.database.db_model import (
     JsonConverter,
     RecordOrders,
     Channel,
@@ -10,8 +9,8 @@ from database.db_model import (
     Settings,
     RecordedFiles,
 )
-from api.tuner import TunerAPI
-from api.client import ClientAPI
+from src.api.tuner import TunerAPI
+from src.api.client import ClientAPI
 
 app = Flask(__name__)
 
