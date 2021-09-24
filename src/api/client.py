@@ -106,12 +106,28 @@ class ClientAPI:
 
     def __check_overlapping(self, id, new_orders):
         orders = self.tuner.get_orders(id, True)
-        # channels = self.get_channels(id, True)
-        # print(channels)
-        all_dates = [(o["start"], o["end"]) for o in orders]
-        all_dates.extend([(o.start, o.end) for o in new_orders])
-        all_dates = sorted(all_dates, key=lambda o: o[0])
-        for i in range(len(all_dates)-1):
-            if all_dates[i][1] > all_dates[i+1][0]:
+        channels = json.loads(self.get_channels(id, True))
+        multiplexes = {}
+        muxes = set()
+        for c in channels:
+            ch_id = c["id"]
+            mux_id = c["multiplex_id"]
+            muxes.add(mux_id)
+            multiplexes[ch_id] = mux_id
+
+        all_dates = [(o["start"], o["end"], o["channel_id"]) for o in orders]
+        all_dates.extend([(o.start, o.end, o.channel_id) for o in new_orders])
+        mux_dates = {mux_id:[] for mux_id in muxes}
+        for d in all_dates:
+            if d[2] not in multiplexes.keys():
                 return False
+            else:
+                mux_dates[multiplexes[d[2]]].append((d[0], d[1]))
+                
+        for m in mux_dates.values():
+            m = sorted(m, key=lambda o: o[0])
+            print(m, len(m))
+            for i in range(len(m)-1):
+                if m[i][1] > m[i+1][0]:
+                    return False
         return True
