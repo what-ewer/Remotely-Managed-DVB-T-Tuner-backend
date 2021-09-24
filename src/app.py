@@ -167,3 +167,7 @@ def generate_data():
 def generate_all():
     db_manager.generate_db_with_data()
     return "Generated tables and data"
+
+
+if __name__ == '__main__':
+    app.run();

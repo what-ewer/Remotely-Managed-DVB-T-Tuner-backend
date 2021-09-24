@@ -3,3 +3,10 @@ __pycache__
 .vscode
 *.db
 venv/
+
+# VS files:
+.vs
+env/
+bin/
+obj/
+Server.pyproj.user
