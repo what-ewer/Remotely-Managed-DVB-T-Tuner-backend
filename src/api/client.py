@@ -1,23 +1,32 @@
 from flask import Response
 import json
-
+from api.tuner import TunerAPI
 
 class ClientAPI:
     def __init__(self, db_manager):
         self.db_manager = db_manager
+        self.tuner = TunerAPI(self.db_manager)
 
     def post_orders(self, id, orders):
-        for o in orders:
-            try:
+        if self.__check_overlapping(id, orders):
+            for o in orders:
+                self.post_order(id, o, True)
+            return Response("successfully posted orders", status=200)
+        else:
+            return Response("Orders are overlapping", status=400)            
+
+    def post_order(self, id, order, checked=False):
+        try:
+            if checked or self.__check_overlapping(id, order):
                 query = f"""INSERT INTO record_orders(tuner_id, channel_id, start, end) \
-                    VALUES({id}, '{o.channel_id}', {o.start}, {o.end})"""
-            except:
-                return Response("Wrong record orders list", status=400)
-            else:
-                try:
-                    self.db_manager.execute_query(query)
-                except Exception as exc:
-                    return Response(str(exc), status=500)
+                    VALUES({id}, '{order.channel_id}', {order.start}, {order.end})"""
+        except:
+            return Response("Wrong order", status=400)
+        else:
+            try:
+                self.db_manager.execute_query(query)
+            except Exception as exc:
+                return Response(str(exc), status=500)
         return Response("successfully posted orders", status=200)
     
     def delete_orders(self, tuner_id, order_id):
@@ -32,18 +41,18 @@ class ClientAPI:
                 return Response(str(exc), status=500)
         return Response("successfully deleted order", status=200)
 
-    def get_tuner_info(self, query):
+    def get_tuner_info(self, query, return_list=False):
         try:
             res = self.db_manager.execute_query(query)
         except Exception as exc:
             return Response(str(exc), status=500)
         res = res[0][0]
-        return Response(res, status=200, mimetype='json')
+        return Response(res, status=200, mimetype='json') if not return_list else res
 
-    def get_channels(self, id):
+    def get_channels(self, id, return_list=False):
         query = f"SELECT channels FROM tuners \
             WHERE id = {id}"
-        return self.get_tuner_info(query)
+        return self.get_tuner_info(query, return_list)
 
     def get_epg(self, id):
         query = f"SELECT epg FROM tuners \
@@ -94,3 +103,15 @@ class ClientAPI:
             except Exception as exc:
                 return Response(str(exc), status=500)
         return Response("successfully posted settings", status=200)
+
+    def __check_overlapping(self, id, new_orders):
+        orders = self.tuner.get_orders(id, True)
+        # channels = self.get_channels(id, True)
+        # print(channels)
+        all_dates = [(o["start"], o["end"]) for o in orders]
+        all_dates.extend([(o.start, o.end) for o in new_orders])
+        all_dates = sorted(all_dates, key=lambda o: o[0])
+        for i in range(len(all_dates)-1):
+            if all_dates[i][1] > all_dates[i+1][0]:
+                return False
+        return True

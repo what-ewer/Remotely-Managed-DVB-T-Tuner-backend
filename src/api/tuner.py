@@ -7,7 +7,7 @@ class TunerAPI:
     def __init__(self, db_manager):
         self.db_manager = db_manager
 
-    def get_orders(self, id):
+    def get_orders(self, id, return_list=False):
         query = f"SELECT channel_id, start, end FROM record_orders \
             WHERE tuner_id = {id}"
 
@@ -23,7 +23,7 @@ class TunerAPI:
             if o[2] > ts  # o[2] includes started programs that didn't end yet, 0[1] returns only not started
         ]
 
-        return Response(json.dumps(result), status=200, mimetype='json')
+        return Response(json.dumps(result), status=200, mimetype='json') if not return_list else result
 
     def get_settings(self, id):
         query = f"""SELECT recording_location, tvh_username, tvh_password FROM settings
