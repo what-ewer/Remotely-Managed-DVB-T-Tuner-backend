@@ -5,16 +5,16 @@ from os.path import isfile, join
 
 class DBManager:
     def _drop_database(self):
-        file = open("database/utility/drop_all", mode="r")
+        file = open("src/database/utility/drop_all", mode="r")
         drop_query = file.readlines()
         file.close()
         self.execute_multiple_queries(drop_query)
 
     def _setup_tables(self):
         table_creates = [
-            join("database/create/", f)
-            for f in listdir("database/create/")
-            if isfile(join("database/create/", f))
+            join("src/database/create/", f)
+            for f in listdir("src/database/create/")
+            if isfile(join("src/database/create/", f))
         ]
         queries = []
         for filename in table_creates:
@@ -25,7 +25,7 @@ class DBManager:
         self.execute_multiple_queries(queries)
 
     def _generate_data(self):
-        file = open("database/utility/example_data", mode="r")
+        file = open("src/database/utility/example_data", mode="r")
         create_query = file.readlines()
         self.execute_multiple_queries(create_query)
         file.close()

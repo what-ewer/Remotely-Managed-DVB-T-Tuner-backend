@@ -2,3 +2,11 @@ __pycache__
 .pytest_cache
 .vscode
 *.db
+venv/
+
+# VS files:
+.vs
+env/
+bin/
+obj/
+Server.pyproj.user
