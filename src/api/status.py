@@ -10,8 +10,8 @@ class StatusAPI:
         try:
             query = f"""INSERT OR REPLACE INTO tuner_status(tuner_id, free_space, is_recording, current_recording_time, current_recording_size)
                         VALUES({id}, {status.free_space}, {status.is_recording}, {status.current_recording_time}, {status.current_recording_size})"""
-        except:
-            return Response("Wrong hearbeat list", status=400)
+        except Exception as exc:
+            return Response(f"Wrong hearbeat list {exc}", status=400)
         else:
             try:
                 self.db_manager.execute_query(query)
@@ -20,7 +20,7 @@ class StatusAPI:
         return Response("successfully posted status", status=200)
 
     def get_status(self, id):
-        query = f"""SELECT free_space, is_recording, current_recording_time, current_recording_size FROM tuner_status
+        query = f"""SELECT free_space, is_recording, current_recording_size, current_recording_time FROM tuner_status
             WHERE tuner_id = {id}"""
         try:
             status = self.db_manager.execute_query(query)

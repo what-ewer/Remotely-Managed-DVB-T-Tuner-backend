@@ -50,14 +50,14 @@ class TunerStatus:
         self,
         free_space,
         is_recording,
-        current_recording_size,
         current_recording_time,
+        current_recording_size,
         **kwargs
     ):
         self.free_space = free_space
         self.is_recording = is_recording
-        self.current_recording_size = current_recording_size
         self.current_recording_time = current_recording_time
+        self.current_recording_size = current_recording_size
 
 
 class Settings:
@@ -68,7 +68,7 @@ class Settings:
 
 
 class RecordedFiles:
-    def __init__(self, channel_id, program_name, record_size, start, end, **kwargs):
+    def __init__(self, program_name, channel_id, record_size, start, end, **kwargs):
         self.program_name = program_name
         self.channel_id = channel_id
         self.record_size = record_size
