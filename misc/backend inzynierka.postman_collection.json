@@ -6,9 +6,26 @@
 	},
 	"item": [
 		{
-			"name": "DATABASE - only tables",
+			"name": "auth test",
 			"request": {
 				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{server}}/",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DATABASE - only tables",
+			"request": {
+				"method": "POST",
 				"header": [],
 				"url": {
 					"raw": "{{server}}/generate/database",
@@ -26,16 +43,16 @@
 		{
 			"name": "DATABASE - with data",
 			"request": {
-				"method": "GET",
+				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{server}}/generate/database",
+					"raw": "{{server}}/generate/example",
 					"host": [
 						"{{server}}"
 					],
 					"path": [
 						"generate",
-						"database"
+						"example"
 					]
 				}
 			},
@@ -48,7 +65,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "[{\"channel_id\": \"testChannelName\", \"start\": 1722243800, \"end\": 1722245600}]\r\n"
+					"raw": "[{\"channel_id\": \"2e2a2a21613cd2e23dd5f2330c1ac982\", \"start\": 1822643800, \"end\": 1822745600}]\r\n"
 				},
 				"url": {
 					"raw": "{{server}}/orders?id=1",
@@ -62,6 +79,41 @@
 						{
 							"key": "id",
 							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete orders",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{server}}/orders/1?tuner_id=2",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"orders",
+						"1"
+					],
+					"query": [
+						{
+							"key": "tuner_id",
+							"value": "2"
 						}
 					]
 				}
@@ -98,7 +150,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"free_space\": 200, \"is_recording\": 0, \"current_recording_time\": 2000, \"current_recording_size\": 5000}"
+					"raw": "{\"free_space\": 200, \"is_recording\": 0, \"current_recording_size\": 5000, \"current_recording_time\": 2000}"
 				},
 				"url": {
 					"raw": "{{server}}/status?id=1",
@@ -148,7 +200,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "[{\"program_name\": \"kew\", \"record_size\": 2000}, {\"program_name\": \"omegalul\", \"record_size\": 2000}]"
+					"raw": "[{\"program_name\": \"kew\", \"channel_id\": \"channel_id\", \"record_size\": 2000, \"start\": 1722643800, \"end\": 1722645800}, {\"program_name\": \"omegalul\", \"channel_id\": \"channel_id\", \"record_size\": 2000, \"start\": 1722643800, \"end\": 1722645800}]"
 				},
 				"url": {
 					"raw": "{{server}}/recorded?id=1",
@@ -248,7 +300,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "[\r\n  {\r\n    \"id\": \"6c34f91f6b869329a19e35ef03c9d47a\",\r\n    \"name\": \"Polsat\"\r\n  },\r\n  {\r\n    \"id\": \"8f7d87a0206b6371fe7ce759e6ca0c89\",\r\n    \"name\": \"Super Polsat\"\r\n  },\r\n  {\r\n    \"id\": \"2e2a2a21613cd2e23dd5f2330c1ac982\",\r\n    \"name\": \"TV4\"\r\n  },\r\n  {\r\n    \"id\": \"7be7d0b343741993b2c0ed8580148599\",\r\n    \"name\": \"TVN 7\"\r\n  },\r\n  {\r\n    \"id\": \"036d1637eee9a17b6d395cee8a9e319c\",\r\n    \"name\": \"TV6\"\r\n  },\r\n  {\r\n    \"id\": \"53faeed55e2fcf3f2394167ac9ed8474\",\r\n    \"name\": \"TV Puls\"\r\n  },\r\n  {\r\n    \"id\": \"c37b5fe363a204974bf800941781a135\",\r\n    \"name\": \"TVN\"\r\n  },\r\n  {\r\n    \"id\": \"0fda1c6e7eb43ea82589771302eeb872\",\r\n    \"name\": \"PULS 2\"\r\n  }\r\n]"
+					"raw": "[\r\n  {\r\n    \"id\": \"6c34f91f6b869329a19e35ef03c9d47a\",\r\n    \"name\": \"Polsat\",\r\n    \"multiplex_id\": \"aaa2\",\r\n    \"multiplex_name\": \"aaa1\"\r\n  },\r\n  {\r\n    \"id\": \"8f7d87a0206b6371fe7ce759e6ca0c89\",\r\n    \"name\": \"Super Polsat\",\r\n    \"multiplex_id\": \"aaa2\",\r\n    \"multiplex_name\": \"aaa1\"\r\n  },\r\n  {\r\n    \"id\": \"2e2a2a21613cd2e23dd5f2330c1ac982\",\r\n    \"name\": \"TV4\",\r\n    \"multiplex_id\": \"aaa1\",\r\n    \"multiplex_name\": \"aaa1\"\r\n  },\r\n  {\r\n    \"id\": \"7be7d0b343741993b2c0ed8580148599\",\r\n    \"name\": \"TVN 7\",\r\n    \"multiplex_id\": \"aaa1\",\r\n    \"multiplex_name\": \"aaa1\"\r\n  },\r\n  {\r\n    \"id\": \"036d1637eee9a17b6d395cee8a9e319c\",\r\n    \"name\": \"TV6\",\r\n    \"multiplex_id\": \"aaa1\",\r\n    \"multiplex_name\": \"aaa1\"\r\n  },\r\n  {\r\n    \"id\": \"53faeed55e2fcf3f2394167ac9ed8474\",\r\n    \"name\": \"TV Puls\",\r\n    \"multiplex_id\": \"aaa1\",\r\n    \"multiplex_name\": \"aaa1\"\r\n  },\r\n  {\r\n    \"id\": \"c37b5fe363a204974bf800941781a135\",\r\n    \"name\": \"TVN\",\r\n    \"multiplex_id\": \"aaa1\",\r\n    \"multiplex_name\": \"aaa1\"\r\n  },\r\n  {\r\n    \"id\": \"0fda1c6e7eb43ea82589771302eeb872\",\r\n    \"name\": \"PULS 2\",\r\n    \"multiplex_id\": \"aaa1\",\r\n    \"multiplex_name\": \"aaa1\"\r\n  }\r\n]"
 				},
 				"url": {
 					"raw": "{{server}}/channels?id=1",
@@ -342,6 +394,21 @@
 			"response": []
 		}
 	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "user",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "user",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",
