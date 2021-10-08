@@ -1,4 +1,5 @@
 from flask import Flask, request, Response
+from flask_httpauth import HTTPBasicAuth
 from src.database.db_manager import DBManager
 from src.database.db_model import (
     JsonConverter,
@@ -8,6 +9,7 @@ from src.database.db_model import (
     TunerStatus,
     Settings,
     RecordedFiles,
+    User,
 )
 from src.api import (
     orders,
@@ -17,10 +19,13 @@ from src.api import (
     recorded,
     settings,
 )
+from src.auth.auth import UserAuth
 
 app = Flask(__name__)
+auth = HTTPBasicAuth()
 
 db_manager = DBManager()
+auth_manager = UserAuth(db_manager)
 orders_api = orders.OrdersAPI(db_manager)
 channels_api = channels.ChannelsAPI(db_manager)
 epg_api = epg.EpgAPI(db_manager)
@@ -29,9 +34,9 @@ recorded_api = recorded.RecordedAPI(db_manager)
 settings_api = settings.SettingsAPI(db_manager)
 
 
-@app.route("/")
-def index():
-    return "Index"
+@auth.verify_password
+def verify_password(username, password):
+    return auth_manager.verify(username, password, request.args.get("id"))
 
 
 def execute_function(function, args=None, data_class=None, convert=True):
@@ -76,6 +81,12 @@ def get_json(data_class, convert):
         return JsonConverter.convert_any(data, data_class)
     else:
         return JsonConverter.check_json(data, data_class)
+
+
+@app.route("/")
+@auth.login_required
+def index():
+    return "Index"
 
 
 # OrdersAPI
