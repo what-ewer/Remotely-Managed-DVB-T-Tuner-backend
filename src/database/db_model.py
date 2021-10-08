@@ -3,6 +3,15 @@ import json
 
 class JsonConverter:
     @staticmethod
+    def convert_any(body, selected_class):
+        json_body = json.loads(body)
+        return (
+            JsonConverter.convert_all(body, selected_class)
+            if isinstance(json_body, list)
+            else JsonConverter.convert(body, selected_class)
+        )
+
+    @staticmethod
     def convert_all(body, selected_class):
         json_body = json.loads(body)
         try:
