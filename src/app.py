@@ -102,10 +102,10 @@ def tuner_orders():
     return execute_function(orders_api.get_orders, ["id"])
 
 
-@app.route("/orders/<order_id>", methods=["DELETE"])
+@app.route("/orders", methods=["DELETE"])
 @auth.login_required
-def delete_orders(order_id):
-    return execute_function(orders_api.delete_orders, ["tuner_id"])
+def delete_orders():
+    return execute_function(orders_api.delete_orders, ["tuner_id", "order_id"])
 
 
 # ChannelsAPI
