@@ -67,9 +67,12 @@ class OrdersAPI:
 
     def __check_overlapping(self, id, new_orders):
         orders = self.get_orders(id, True)
-        channels = json.loads(self.channel_api.get_channels(id, True))
+        channels = json.loads(self.channel_api.get_channels(id, True) or 'null')
         multiplexes = {}
         muxes = set()
+        if not channels:
+            return True
+            
         for c in channels:
             ch_id = c["id"]
             mux_id = c["multiplex_id"]

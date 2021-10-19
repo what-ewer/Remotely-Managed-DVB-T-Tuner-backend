@@ -1,4 +1,5 @@
 from flask import Flask, request, Response
+from flask_httpauth import HTTPBasicAuth
 from src.database.db_manager import DBManager
 from src.database.db_model import (
     JsonConverter,
@@ -8,6 +9,7 @@ from src.database.db_model import (
     TunerStatus,
     Settings,
     RecordedFiles,
+    User,
 )
 from src.api import (
     orders,
@@ -17,10 +19,13 @@ from src.api import (
     recorded,
     settings,
 )
+from src.auth.auth import UserAuth
 
 app = Flask(__name__)
+auth = HTTPBasicAuth()
 
 db_manager = DBManager()
+auth_manager = UserAuth(db_manager)
 orders_api = orders.OrdersAPI(db_manager)
 channels_api = channels.ChannelsAPI(db_manager)
 epg_api = epg.EpgAPI(db_manager)
@@ -29,9 +34,9 @@ recorded_api = recorded.RecordedAPI(db_manager)
 settings_api = settings.SettingsAPI(db_manager)
 
 
-@app.route("/")
-def index():
-    return "Index"
+@auth.verify_password
+def verify_password(username, password):
+    return auth_manager.verify(username, password, request.args.get("id"))
 
 
 def execute_function(function, args=None, data_class=None, convert=True):
@@ -78,73 +83,92 @@ def get_json(data_class, convert):
         return JsonConverter.check_json(data, data_class)
 
 
+@app.route("/")
+@auth.login_required
+def index():
+    return "Index"
+
+
 # OrdersAPI
 @app.route("/orders", methods=["POST"])
+@auth.login_required
 def client_orders():
     return execute_function(orders_api.post_orders, ["id"], RecordOrders)
 
 
 @app.route("/orders", methods=["GET"])
+@auth.login_required
 def tuner_orders():
     return execute_function(orders_api.get_orders, ["id"])
 
 
-@app.route("/orders/<order_id>", methods=["DELETE"])
-def delete_orders(order_id):
-    return execute_function(orders_api.delete_orders, ["tuner_id"])
+@app.route("/orders", methods=["DELETE"])
+@auth.login_required
+def delete_orders():
+    return execute_function(orders_api.delete_orders, ["tuner_id", "order_id"])
 
 
 # ChannelsAPI
 @app.route("/channels", methods=["POST"])
+@auth.login_required
 def tuner_channels():
     return execute_function(channels_api.post_channels, ["id"], Channel, False)
 
 
 @app.route("/channels", methods=["GET"])
+@auth.login_required
 def client_channels():
     return execute_function(channels_api.get_channels, ["id"])
 
 
 # EpgAPI
 @app.route("/epg", methods=["POST"])
+@auth.login_required
 def tuner_epg():
     return execute_function(epg_api.post_epg, ["id"], EPG, False)
 
 
 @app.route("/epg", methods=["GET"])
+@auth.login_required
 def client_epg():
     return execute_function(epg_api.get_epg, ["id"])
 
 
 # StatusAPI
 @app.route("/status", methods=["POST"])
+@auth.login_required
 def tuner_status():
     return execute_function(status_api.post_status, ["id"], TunerStatus)
 
 
 @app.route("/status", methods=["GET"])
+@auth.login_required
 def client_status():
     return execute_function(status_api.get_status, ["id"])
 
 
 # SettingsAPI
 @app.route("/settings", methods=["POST"])
+@auth.login_required
 def client_settings():
     return execute_function(settings_api.post_settings, ["id"], Settings)
 
 
 @app.route("/settings", methods=["GET"])
+@auth.login_required
 def tuner_settings():
     return execute_function(settings_api.get_settings, ["id"])
 
 
 # Recorded API
 @app.route("/recorded", methods=["POST"])
+@auth.login_required
 def tuner_recorded():
     return execute_function(recorded_api.post_recorded, ["id"], RecordedFiles)
 
 
 @app.route("/recorded", methods=["GET"])
+@auth.login_required
 def client_recorded():
     return execute_function(recorded_api.get_recorded, ["id"])
 
