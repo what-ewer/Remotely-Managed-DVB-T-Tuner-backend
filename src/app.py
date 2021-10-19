@@ -88,6 +88,10 @@ def get_json(data_class, convert):
 def index():
     return "Index"
 
+#AuthAPI
+@app.route("/login", methods=["GET"])
+def check_login():
+    return auth_manager.check_login(request.authorization.get("username"), request.authorization.get("password"))
 
 # OrdersAPI
 @app.route("/orders", methods=["POST"])
