@@ -51,9 +51,11 @@ class OrdersAPI:
                 self.db_manager.execute_query(query)
             except Exception as exc:
                 return Response(str(exc), status=500)
-        return Response("successfully posted orders", status=200)
+        return Response("Successfully posted orders", status=200)
 
     def delete_orders(self, tuner_id, order_id):
+        if not self.__order_exists(order_id):
+            return Response("Order doesnt exist", status=406)
         try:
             query = f"""DELETE FROM record_orders WHERE tuner_id = {tuner_id} and id = {order_id}"""
         except Exception as exc:
@@ -63,16 +65,29 @@ class OrdersAPI:
                 self.db_manager.execute_query(query)
             except Exception as exc:
                 return Response(str(exc), status=500)
-        return Response("successfully deleted order", status=200)
+        return Response("Successfully deleted order", status=200)
+
+    def __order_exists(self, order_id):
+        try:
+            query = f"""SELECT id FROM record_orders
+            WHERE id = '{order_id}'"""
+        except Exception as exc:
+            return True
+        else:
+            try:
+                id = self.db_manager.execute_query(query)
+            except Exception as exc:
+                return True
+        return id
 
     def __check_overlapping(self, id, new_orders):
         orders = self.get_orders(id, True)
-        channels = json.loads(self.channel_api.get_channels(id, True) or 'null')
+        channels = json.loads(self.channel_api.get_channels(id, True) or "null")
         multiplexes = {}
         muxes = set()
         if not channels:
             return True
-            
+
         for c in channels:
             ch_id = c["id"]
             mux_id = c["multiplex_id"]

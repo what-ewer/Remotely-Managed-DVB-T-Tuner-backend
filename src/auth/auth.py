@@ -1,6 +1,7 @@
 from flask import Response
 import json
 
+
 class UserAuth:
     def __init__(self, db_manager):
         self.db_manager = db_manager
@@ -40,8 +41,11 @@ class UserAuth:
         if not id:
             return Response(json.dumps({"status": False, "tuner_ids": []}), status=400)
         else:
-            return Response(json.dumps({"status": True, "tuner_ids": self.__get_user_tuners(id)}), status=200)
-        
+            return Response(
+                json.dumps({"status": True, "tuner_ids": self.__get_user_tuners(id)}),
+                status=200,
+            )
+
     def __get_user_id(self, user, password):
         try:
             query = f"""SELECT id FROM users
@@ -70,11 +74,17 @@ class UserAuth:
 
     def register(self, username, password):
         if self.__user_already_exists(username):
-            return Response(json.dumps(f"User with username {username} already exists"), status=400)
+            return Response(
+                json.dumps(f"User with username {username} already exists"), status=400
+            )
         elif self.__register_user(username, password):
-            return Response(json.dumps(f"Successfully registered {username}"), status=200)
+            return Response(
+                json.dumps(f"Successfully registered {username}"), status=200
+            )
         else:
-            return Response(json.dumps(f"Something went wrong while registering"), status=400)
+            return Response(
+                json.dumps(f"Something went wrong while registering"), status=400
+            )
 
     def __user_already_exists(self, username):
         try:
