@@ -93,6 +93,11 @@ def index():
 def check_login():
     return auth_manager.check_login(request.authorization.get("username"), request.authorization.get("password"))
 
+
+@app.route("/register", methods=["POST"])
+def register_user():
+    return auth_manager.register(request.authorization.get("username"), request.authorization.get("password"))
+
 # OrdersAPI
 @app.route("/orders", methods=["POST"])
 @auth.login_required

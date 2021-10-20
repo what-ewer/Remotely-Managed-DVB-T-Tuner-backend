@@ -37,7 +37,6 @@ class UserAuth:
 
     def check_login(self, user, password):
         id = self.__get_user_id(user, password)
-        print(id)
         if not id:
             return Response(json.dumps({"status": False, "tuner_ids": []}), status=400)
         else:
@@ -54,7 +53,7 @@ class UserAuth:
                 id = self.db_manager.execute_query(query)
             except Exception as exc:
                 return False
-        return id[0][0] if id else -1
+        return id[0][0] if id else False
 
     def __get_user_tuners(self, id):
         try:
@@ -68,3 +67,37 @@ class UserAuth:
             except Exception as exc:
                 return []
         return [i[0] for i in tuner_ids] if tuner_ids else []
+
+    def register(self, username, password):
+        if self.__user_already_exists(username):
+            return Response(json.dumps(f"User with username {username} already exists"), status=400)
+        elif self.__register_user(username, password):
+            return Response(json.dumps(f"Successfully registered {username}"), status=200)
+        else:
+            return Response(json.dumps(f"Something went wrong while registering"), status=400)
+
+    def __user_already_exists(self, username):
+        try:
+            query = f"""SELECT id FROM users
+                WHERE login = '{username}'"""
+        except Exception as exc:
+            return True
+        else:
+            try:
+                exists = self.db_manager.execute_query(query)
+            except Exception as exc:
+                return True
+        return exists
+
+    def __register_user(self, username, password):
+        try:
+            query = f"""INSERT INTO users (login, password)
+                VALUES ('{username}', '{password}')"""
+        except Exception as exc:
+            return False
+        else:
+            try:
+                registered = self.db_manager.execute_query(query)
+            except Exception as exc:
+                return False
+        return True
