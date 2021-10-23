@@ -39,11 +39,13 @@ class DBManager:
         self._drop_database()
         self._setup_tables()
 
-    def execute_query(self, query):
+    def execute_query(self, query, get_inserted_id=False):
         con = sqlite3.connect("rmdvbt.db")
         cur = con.cursor()
         cur.execute(query)
         res = cur.fetchall()
+        if get_inserted_id:
+            res = cur.lastrowid
         con.commit()
         cur.close()
         con.close

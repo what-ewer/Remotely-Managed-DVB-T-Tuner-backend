@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS user_tuners (
     user_id integer NOT NULL,
     tuner_id integer NOT NULL,
+    role varchar(255),
     CONSTRAINT user_tuners_pk PRIMARY KEY (tuner_id,user_id),
     CONSTRAINT user_tuners_users FOREIGN KEY (user_id)
     REFERENCES users (id),
