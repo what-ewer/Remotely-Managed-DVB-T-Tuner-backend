@@ -18,6 +18,7 @@ from src.api import (
     status,
     recorded,
     settings,
+    tuner,
 )
 from src.auth.auth import UserAuth
 
@@ -32,6 +33,7 @@ epg_api = epg.EpgAPI(db_manager)
 status_api = status.StatusAPI(db_manager)
 recorded_api = recorded.RecordedAPI(db_manager)
 settings_api = settings.SettingsAPI(db_manager)
+tuner_api = tuner.TunerAPI(db_manager)
 
 
 @auth.verify_password
@@ -63,7 +65,10 @@ def check_args(args):
     args_values = []
     missing_args = []
     for arg in args:
-        arg_val = request.args.get(arg)
+        if arg == "username" or arg == "password":
+            arg_val = request.authorization.get(arg)
+        else:
+            arg_val = request.args.get(arg)
         args_values.append(arg_val)
         if not arg_val:
             missing_args.append(arg)
@@ -92,16 +97,55 @@ def index():
 # AuthAPI
 @app.route("/login", methods=["GET"])
 def check_login():
-    return auth_manager.check_login(
-        request.authorization.get("username"), request.authorization.get("password")
-    )
+    return execute_function(auth_manager.check_login, ["username", "password"])
 
 
 @app.route("/register", methods=["POST"])
 def register_user():
-    return auth_manager.register(
-        request.authorization.get("username"), request.authorization.get("password")
-    )
+    return execute_function(auth_manager.register, ["username", "password"])
+
+
+#TunerAPI
+@app.route("/tuner/create", methods=["POST"])
+@auth.login_required
+def create_tuner():
+    return execute_function(tuner_api.create_tuner, ["username", "tuner_name"])
+
+
+@app.route("/tuner/invite/add", methods=["POST"])
+@auth.login_required
+def invite_user():
+    return execute_function(tuner_api.add_user_to_tuner, ["user", "tuner_id"])
+
+
+@app.route("/tuner/invite/accept", methods=["POST"])
+@auth.login_required
+def accept_invite():
+    return execute_function(tuner_api.accept_invite, ["username", "tuner_id"])
+
+
+@app.route("/tuner/invite/decline", methods=["POST"])
+@auth.login_required
+def decline_invite():
+    return execute_function(tuner_api.decline_invite, ["username", "tuner_id"])
+
+
+@app.route("/tuner/users/remove", methods=["POST"])
+@auth.login_required
+def remove_user():
+    return execute_function(tuner_api.remove_user_from_tuner, ["username", "user", "tuner_id"])
+
+
+@app.route("/tuner/users/list", methods=["GET"])
+@auth.login_required
+def tuner_user_list():
+    return execute_function(tuner_api.list_users, ["username", "tuner_id"])
+
+
+@app.route("/tuner/list", methods=["GET"])
+@auth.login_required
+def tuner_list():
+    return execute_function(tuner_api.list_tuners, ["username"])
 
 
 # OrdersAPI
