@@ -105,7 +105,7 @@ def register_user():
     return execute_function(auth_manager.register, ["username", "password"])
 
 
-#TunerAPI
+# TunerAPI
 @app.route("/tuner/create", methods=["POST"])
 @auth.login_required
 def create_tuner():
@@ -133,7 +133,9 @@ def decline_invite():
 @app.route("/tuner/users/remove", methods=["POST"])
 @auth.login_required
 def remove_user():
-    return execute_function(tuner_api.remove_user_from_tuner, ["username", "user", "tuner_id"])
+    return execute_function(
+        tuner_api.remove_user_from_tuner, ["username", "user", "tuner_id"]
+    )
 
 
 @app.route("/tuner/users/list", methods=["GET"])

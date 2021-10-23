@@ -11,27 +11,26 @@ class TunerAPI:
         if tuner_id:
             if self.__associate_tuner_with(username, tuner_id, "owner"):
                 return Response(
-                json.dumps(f"Successfully created new tuner"), status=200
-            )
+                    json.dumps(f"Successfully created new tuner"), status=200
+                )
         return Response(
-                json.dumps(f"Something went wrong while creating tuner"), status=400
-            )
+            json.dumps(f"Something went wrong while creating tuner"), status=400
+        )
 
     def add_user_to_tuner(self, username, tuner_id):
         if self.__user_already_added(username, tuner_id):
             return Response(
-                json.dumps(f"User already invited/declined or user of tuner"), status=400
+                json.dumps(f"User already invited/declined or user of tuner"),
+                status=400,
             )
         if self.__add_user_to_tuner(username, tuner_id):
             return Response(
                 json.dumps(f"Successfully invited user to tuner"), status=200
-            ) 
-        return Response(
-                json.dumps(f"Failed to invite user to tuner"), status=400
             )
+        return Response(json.dumps(f"Failed to invite user to tuner"), status=400)
 
     def accept_invite(self, username, tuner_id):
-        res = self.__user_already_added(username, tuner_id) 
+        res = self.__user_already_added(username, tuner_id)
         if res and len(res) == 1:
             [(uid, tid, role)] = res
             if role == "invited":
@@ -43,14 +42,15 @@ class TunerAPI:
                     )
             else:
                 return Response(
-                    json.dumps(f"Cannot accept invitation to tuner, current status: {role}"), status=400
+                    json.dumps(
+                        f"Cannot accept invitation to tuner, current status: {role}"
+                    ),
+                    status=400,
                 )
-        return Response(
-            json.dumps(f"Failed to accept invite"), status=400
-        )
+        return Response(json.dumps(f"Failed to accept invite"), status=400)
 
     def decline_invite(self, username, tuner_id):
-        res = self.__user_already_added(username, tuner_id) 
+        res = self.__user_already_added(username, tuner_id)
         if res and len(res) == 1:
             [(uid, tid, role)] = res
             if role == "invited":
@@ -62,11 +62,12 @@ class TunerAPI:
                     )
             else:
                 return Response(
-                    json.dumps(f"Cannot accept invitation to tuner, current status: {role}"), status=400
+                    json.dumps(
+                        f"Cannot accept invitation to tuner, current status: {role}"
+                    ),
+                    status=400,
                 )
-        return Response(
-            json.dumps(f"Failed to accept invite"), status=400
-        )
+        return Response(json.dumps(f"Failed to accept invite"), status=400)
 
     def remove_user_from_tuner(self, username, user, tuner_id):
         if not self.__is_user_owner(username, tuner_id):
@@ -79,12 +80,8 @@ class TunerAPI:
                     json.dumps(f"Successfully removed user from tuner"), status=200
                 )
         else:
-            return Response(
-                json.dumps(f"No such user for this tuner"), status=400
-            )
-        return Response(
-            json.dumps(f"Failed to remove user from tuner"), status=400
-        )
+            return Response(json.dumps(f"No such user for this tuner"), status=400)
+        return Response(json.dumps(f"Failed to remove user from tuner"), status=400)
 
     def list_users(self, username, tuner_id):
         if not self.__is_user_of_tuner(username, tuner_id):
@@ -93,9 +90,7 @@ class TunerAPI:
             )
         users = self.__get_users_of_tuner(tuner_id)
         if users:
-            return Response(
-                json.dumps(users), status=400
-            )
+            return Response(json.dumps(users), status=400)
         else:
             return Response(
                 json.dumps(f"Failed to get a list of users from tuner"), status=400
@@ -104,14 +99,12 @@ class TunerAPI:
     def list_tuners(self, username):
         tuners = self.__get_tuners_of_user(username)
         if tuners:
-            return Response(
-                json.dumps(tuners), status=200
-            )
+            return Response(json.dumps(tuners), status=200)
         else:
             return Response(
-                json.dumps(f"Failed to get a list of tuners of user or list is empty"), status=400
+                json.dumps(f"Failed to get a list of tuners of user or list is empty"),
+                status=400,
             )
-
 
     def __create_user_tuner(self, tuner_name):
         try:
@@ -142,7 +135,7 @@ class TunerAPI:
             except Exception as exc:
                 return False
         return registered
-    
+
     def __user_already_added(self, username, tuner_id):
         try:
             query = f"""SELECT user_id, tuner_id, role
