@@ -156,7 +156,7 @@ def tuner_list():
 @app.route("/orders", methods=["POST"])
 @auth.login_required
 def client_orders():
-    return execute_function(orders_api.post_orders, ["id"], RecordOrders)
+    return execute_function(orders_api.post_orders, ["id", "username", "password"], RecordOrders)
 
 
 @app.route("/orders", methods=["GET"])
@@ -188,7 +188,7 @@ def client_channels():
 @app.route("/epg", methods=["POST"])
 @auth.login_required
 def tuner_epg():
-    return execute_function(epg_api.post_epg, ["id"], EPG, False)
+    return execute_function(epg_api.post_epg, ["id", "username", "password"], EPG, False)
 
 
 @app.route("/epg", methods=["GET"])
@@ -214,7 +214,7 @@ def client_status():
 @app.route("/settings", methods=["POST"])
 @auth.login_required
 def client_settings():
-    return execute_function(settings_api.post_settings, ["id"], Settings)
+    return execute_function(settings_api.post_settings, ["id", "username", "password"], Settings)
 
 
 @app.route("/settings", methods=["GET"])
@@ -243,10 +243,16 @@ def get_hearbeat():
     return execute_function(heartbeat_api.get_heartbeat, ["id"])
 
 
-@app.route("/heartbeat", methods=["POST"])
+@app.route("/heartbeat/ask", methods=["POST"])
 @auth.login_required
 def information_needed():
     return execute_function(heartbeat_api.ask_for_information, ["id", "information"])
+
+
+@app.route("/heartbeat/provide", methods=["POST"])
+@auth.login_required
+def information_provided():
+    return execute_function(heartbeat_api.provide_information, ["id", "information"])
 
 
 # temporary endpoints for some features

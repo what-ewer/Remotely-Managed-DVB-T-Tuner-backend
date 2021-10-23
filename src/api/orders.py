@@ -1,5 +1,6 @@
 from flask import Response
-import json, datetime
+import json, datetime, requests
+from src.api import heartbeat
 from api.channels import ChannelsAPI
 
 
@@ -31,7 +32,8 @@ class OrdersAPI:
             else result
         )
 
-    def post_orders(self, id, orders):
+    def post_orders(self, id, username, password, orders):
+        requests.post(url=f"{heartbeat.url}/ask", params={"id": id, "information": "changed_recording_order_list"}, auth=(username, password))
         if self.__check_overlapping(id, orders):
             for o in orders:
                 self.post_order(id, o, True)

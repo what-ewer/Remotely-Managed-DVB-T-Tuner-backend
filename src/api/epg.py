@@ -1,5 +1,6 @@
 from flask import Response
-import json
+import json, requests
+from src.api import heartbeat
 
 
 class EpgAPI:
@@ -14,12 +15,13 @@ class EpgAPI:
         res = res[0][0] if res else ""
         return Response(res, status=200, mimetype="json") if not return_list else res
 
-    def post_epg(self, id, epg):
+    def post_epg(self, id, username, password, epg):
         epg_dumped = json.dumps(epg)
         epg_dumped = epg_dumped.replace("'", "''")
         query = f"""UPDATE tuners
         SET epg = '{epg_dumped}'
         WHERE id = {id}"""
+        requests.post(url=f"{heartbeat.url}/provide", params={"id": id, "information": "need_epg"}, auth=(username, password))
 
         try:
             self.db_manager.execute_query(query)
