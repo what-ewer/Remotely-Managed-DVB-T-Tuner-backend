@@ -19,6 +19,7 @@ from src.api import (
     recorded,
     settings,
     tuner,
+    heartbeat,
 )
 from src.auth.auth import UserAuth
 
@@ -34,6 +35,7 @@ status_api = status.StatusAPI(db_manager)
 recorded_api = recorded.RecordedAPI(db_manager)
 settings_api = settings.SettingsAPI(db_manager)
 tuner_api = tuner.TunerAPI(db_manager)
+heartbeat_api = heartbeat.HeartbeatAPI(db_manager)
 
 
 @auth.verify_password
@@ -232,6 +234,19 @@ def tuner_recorded():
 @auth.login_required
 def client_recorded():
     return execute_function(recorded_api.get_recorded, ["id"])
+
+
+#Heartbeat API
+@app.route("/heartbeat", methods=["GET"])
+@auth.login_required
+def get_hearbeat():
+    return execute_function(heartbeat_api.get_heartbeat, ["id"])
+
+
+@app.route("/heartbeat", methods=["POST"])
+@auth.login_required
+def information_needed():
+    return execute_function(heartbeat_api.ask_for_information, ["id", "information"])
 
 
 # temporary endpoints for some features
