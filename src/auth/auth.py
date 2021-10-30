@@ -79,7 +79,7 @@ class UserAuth:
             )
         elif self.__register_user(username, password):
             return Response(
-                json.dumps({"status": False, "text": "Successfully registered {username}"}), status=200
+                json.dumps({"status": True, "text": "Successfully registered {username}"}), status=200
             )
         else:
             return Response(
