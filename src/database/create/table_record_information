@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS record_information (
+    order_id integer NOT NULL,
+    channel_name varchar(255),
+    channel_id varchar(255),
+    start bigint,
+    stop bigint,
+    title varchar(255),
+    subtitle varchar(255),
+    summary varchar(255),
+    description varchar(255),
+    record_size int,
+    file_name varchar(255),
+    CONSTRAINT record_info_pk PRIMARY KEY (order_id),
+    CONSTRAINT record_info_fk FOREIGN KEY (order_id)
+    REFERENCES record_orders (id)
+);

@@ -19,6 +19,8 @@ from src.api import (
     recorded,
     settings,
     tuner,
+    heartbeat,
+    favorites,
 )
 from src.auth.auth import UserAuth
 
@@ -34,6 +36,8 @@ status_api = status.StatusAPI(db_manager)
 recorded_api = recorded.RecordedAPI(db_manager)
 settings_api = settings.SettingsAPI(db_manager)
 tuner_api = tuner.TunerAPI(db_manager)
+heartbeat_api = heartbeat.HeartbeatAPI(db_manager)
+favorites_api = favorites.FavoritesAPI(db_manager)
 
 
 @auth.verify_password
@@ -105,7 +109,7 @@ def register_user():
     return execute_function(auth_manager.register, ["username", "password"])
 
 
-#TunerAPI
+# TunerAPI
 @app.route("/tuner/create", methods=["POST"])
 @auth.login_required
 def create_tuner():
@@ -133,7 +137,9 @@ def decline_invite():
 @app.route("/tuner/users/remove", methods=["POST"])
 @auth.login_required
 def remove_user():
-    return execute_function(tuner_api.remove_user_from_tuner, ["username", "user", "tuner_id"])
+    return execute_function(
+        tuner_api.remove_user_from_tuner, ["username", "user", "tuner_id"]
+    )
 
 
 @app.route("/tuner/users/list", methods=["GET"])
@@ -152,7 +158,7 @@ def tuner_list():
 @app.route("/orders", methods=["POST"])
 @auth.login_required
 def client_orders():
-    return execute_function(orders_api.post_orders, ["id"], RecordOrders)
+    return execute_function(orders_api.post_orders, ["id", "username", "password"], RecordOrders)
 
 
 @app.route("/orders", methods=["GET"])
@@ -184,7 +190,7 @@ def client_channels():
 @app.route("/epg", methods=["POST"])
 @auth.login_required
 def tuner_epg():
-    return execute_function(epg_api.post_epg, ["id"], EPG, False)
+    return execute_function(epg_api.post_epg, ["id", "username", "password"], EPG, False)
 
 
 @app.route("/epg", methods=["GET"])
@@ -210,7 +216,7 @@ def client_status():
 @app.route("/settings", methods=["POST"])
 @auth.login_required
 def client_settings():
-    return execute_function(settings_api.post_settings, ["id"], Settings)
+    return execute_function(settings_api.post_settings, ["id", "username", "password"], Settings)
 
 
 @app.route("/settings", methods=["GET"])
@@ -230,6 +236,44 @@ def tuner_recorded():
 @auth.login_required
 def client_recorded():
     return execute_function(recorded_api.get_recorded, ["id"])
+
+
+#Heartbeat API
+@app.route("/heartbeat", methods=["GET"])
+@auth.login_required
+def get_hearbeat():
+    return execute_function(heartbeat_api.get_heartbeat, ["id"])
+
+
+@app.route("/heartbeat/ask", methods=["POST"])
+@auth.login_required
+def information_needed():
+    return execute_function(heartbeat_api.ask_for_information, ["id", "information"])
+
+
+@app.route("/heartbeat/provide", methods=["POST"])
+@auth.login_required
+def information_provided():
+    return execute_function(heartbeat_api.provide_information, ["id", "information"])
+
+
+#Favorites API
+@app.route("/favorites", methods=["POST"])
+@auth.login_required
+def add_favorite():
+    return execute_function(favorites_api.add_favorite, ["username", "name"])
+
+
+@app.route("/favorites", methods=["GET"])
+@auth.login_required
+def get_favorites():
+    return execute_function(favorites_api.get_favorites, ["username"])
+
+
+@app.route("/favorites", methods=["DELETE"])
+@auth.login_required
+def remove_favorite():
+    return execute_function(favorites_api.remove_favorite, ["username", "name"])
 
 
 # temporary endpoints for some features

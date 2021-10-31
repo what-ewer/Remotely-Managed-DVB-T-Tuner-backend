@@ -1,5 +1,6 @@
 from flask import Response
-import json
+import json, requests
+from src.api import heartbeat
 
 
 class SettingsAPI:
@@ -20,7 +21,7 @@ class SettingsAPI:
         ]
         return Response(json.dumps(result), status=200, mimetype="json")
 
-    def post_settings(self, id, settings):
+    def post_settings(self, id, username, password, settings):
         try:
             query = f"""INSERT OR REPLACE INTO settings(tuner_id, recording_location, tvh_username, tvh_password)
                         VALUES({id}, '{settings.recording_location}', '{settings.tvh_username}', '{settings.tvh_password}')"""
@@ -28,6 +29,7 @@ class SettingsAPI:
             return Response("Wrong settings list", status=400)
         else:
             try:
+                requests.post(url=f"{heartbeat.url}/ask", params={"id": id, "information": "changed_settings"}, auth=(username, password))
                 self.db_manager.execute_query(query)
             except Exception as exc:
                 return Response(str(exc), status=500)
