@@ -68,8 +68,10 @@ class Settings:
 
 
 class RecordedFiles:
-    def __init__(self, program_name, channel_id, record_size, start, end, **kwargs):
+    def __init__(self, order_id, program_name, file_name, channel_id, record_size, start, end, **kwargs):
+        self.order_id = order_id
         self.program_name = program_name
+        self.file_name = file_name
         self.channel_id = channel_id
         self.record_size = record_size
         self.start = start
@@ -143,3 +145,33 @@ class Channel:
         self.name = name
         self.multiplex_id = multiplex_id
         self.multiplex_name = multiplex_name
+
+class RecordInformation:
+    def __init__(
+        self,
+        order_id,
+        channel_name,
+        channel_uuid,
+        channel_number,
+        start,
+        stop,
+        title,
+        subtitle,
+        summary,
+        description,
+        record_size,
+        file_name,
+        **kwargs
+    ):
+        self.order_id = order_id
+        self.channel_name = channel_name
+        self.channel_uuid = channel_uuid
+        self.channel_number = channel_number
+        self.start = start
+        self.stop = stop
+        self.title = title
+        self.subtitle = subtitle
+        self.summary = summary
+        self.description = description
+        self.record_size = record_size
+        self.file_name = file_name

@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS favorites (
+    id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+    user_id integer NOT NULL,
+    favorite varchar(255),
+    CONSTRAINT favorites_users FOREIGN KEY (user_id)
+    REFERENCES users (id)
+);
