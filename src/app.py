@@ -20,6 +20,7 @@ from src.api import (
     settings,
     tuner,
     heartbeat,
+    favorites,
 )
 from src.auth.auth import UserAuth
 
@@ -36,6 +37,7 @@ recorded_api = recorded.RecordedAPI(db_manager)
 settings_api = settings.SettingsAPI(db_manager)
 tuner_api = tuner.TunerAPI(db_manager)
 heartbeat_api = heartbeat.HeartbeatAPI(db_manager)
+favorites_api = favorites.FavoritesAPI(db_manager)
 
 
 @auth.verify_password
@@ -253,6 +255,25 @@ def information_needed():
 @auth.login_required
 def information_provided():
     return execute_function(heartbeat_api.provide_information, ["id", "information"])
+
+
+#Favorites API
+@app.route("/favorites", methods=["POST"])
+@auth.login_required
+def add_favorite():
+    return execute_function(favorites_api.add_favorite, ["username", "name"])
+
+
+@app.route("/favorites", methods=["GET"])
+@auth.login_required
+def get_favorites():
+    return execute_function(favorites_api.get_favorites, ["username"])
+
+
+@app.route("/favorites", methods=["DELETE"])
+@auth.login_required
+def remove_favorite():
+    return execute_function(favorites_api.remove_favorite, ["username", "name"])
 
 
 # temporary endpoints for some features
