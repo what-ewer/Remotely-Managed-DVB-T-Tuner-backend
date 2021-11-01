@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS record_orders (
+    id integer NOT NULL CONSTRAINT record_orders_pk PRIMARY KEY AUTOINCREMENT,
+    tuner_id integer NOT NULL,
+    title varchar(255) NOT NULL,
+    channelUuid varchar(255) NOT NULL,
+    channelName varchar(255) NOT NULL,
+    start bigint NOT NULL,
+    stop bigint NOT NULL,
+    subtitle varchar(255),
+    summary varchar(255),
+    description varchar(255),
+    alreadySaved boolean DEFAULT FALSE NOT NULL,
+    favorite boolean DEFAULT FALSE NOT NULL,
+    CONSTRAINT record_orders_tuners FOREIGN KEY (tuner_id)
+    REFERENCES tuners (id)
+);

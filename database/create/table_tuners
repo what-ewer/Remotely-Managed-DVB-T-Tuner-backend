@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS tuners (
+    id integer NOT NULL CONSTRAINT tuners_pk PRIMARY KEY AUTOINCREMENT,
+    tuner_name varchar(255),
+    epg clob,
+    channels clob
+);

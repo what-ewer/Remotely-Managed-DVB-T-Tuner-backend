@@ -1,0 +1,321 @@
+{
+	"info": {
+		"_postman_id": "c2de9a56-488c-4442-ac87-5684af6a1322",
+		"name": "backend inzynierka",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "post orders",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[{\"channel_id\": 7, \"start\": 1622243800, \"end\": 1622245600}]\r\n"
+				},
+				"url": {
+					"raw": "localhost:5000/orders?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"orders"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get orders",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/orders?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"orders"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post  status",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"free_space\": 200, \"is_recording\": 0, \"current_recording_time\": 2000, \"current_recording_size\": 5000}"
+				},
+				"url": {
+					"raw": "localhost:5000/heartbeat?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"heartbeat"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/heartbeat?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"heartbeat"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post recorded",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[{\"program_name\": \"kew\", \"record_size\": 2000}, {\"program_name\": \"omegalul\", \"record_size\": 2000}]"
+				},
+				"url": {
+					"raw": "localhost:5000/recorded?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"recorded"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get recorded",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/recorded?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"recorded"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post settings",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"recording_location\": \"xd\", \"tvh_username\": \"xddd\", \"tvh_password\": \"sdadsa\"}"
+				},
+				"url": {
+					"raw": "localhost:5000/settings?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"settings"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get settings",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/settings?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"settings"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post channels",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n  {\r\n    \"id\": \"6c34f91f6b869329a19e35ef03c9d47a\",\r\n    \"name\": \"Polsat\"\r\n  },\r\n  {\r\n    \"id\": \"8f7d87a0206b6371fe7ce759e6ca0c89\",\r\n    \"name\": \"Super Polsat\"\r\n  },\r\n  {\r\n    \"id\": \"2e2a2a21613cd2e23dd5f2330c1ac982\",\r\n    \"name\": \"TV4\"\r\n  },\r\n  {\r\n    \"id\": \"7be7d0b343741993b2c0ed8580148599\",\r\n    \"name\": \"TVN 7\"\r\n  },\r\n  {\r\n    \"id\": \"036d1637eee9a17b6d395cee8a9e319c\",\r\n    \"name\": \"TV6\"\r\n  },\r\n  {\r\n    \"id\": \"53faeed55e2fcf3f2394167ac9ed8474\",\r\n    \"name\": \"TV Puls\"\r\n  },\r\n  {\r\n    \"id\": \"c37b5fe363a204974bf800941781a135\",\r\n    \"name\": \"TVN\"\r\n  },\r\n  {\r\n    \"id\": \"0fda1c6e7eb43ea82589771302eeb872\",\r\n    \"name\": \"PULS 2\"\r\n  }\r\n]"
+				},
+				"url": {
+					"raw": "localhost:5000/channels?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"channels"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get channels",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/channels?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"channels"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post epg",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n  {\r\n    \"eventId\": 4205,\r\n    \"episodeId\": 4206,\r\n    \"channelName\": \"Super Polsat\",\r\n    \"channelUuid\": \"8f7d87a0206b6371fe7ce759e6ca0c89\",\r\n    \"channelNumber\": \"11\",\r\n    \"start\": 1620842400,\r\n    \"stop\": 1620850500,\r\n    \"title\": \"Dorwać byłą\",\r\n    \"subtitle\": \"komedia romantyczna\",\r\n    \"summary\": \"komedia romantyczna\",\r\n    \"description\": \"Milo Boyd, były policjant, jest łowcą nagród. Nie wiedzie mu się najlepiej. Kolejne zlecenie może być rozwiązaniem jego kłopotów. Ma doprowadzić przed sąd swoją byłą żonę, dziennikarkę Nicole Hurley. Zadanie mocno się komplikuje.\",\r\n    \"genre\": [\r\n      20\r\n    ],\r\n    \"nextEventId\": 4207\r\n  },\r\n  {\r\n    \"eventId\": 7859,\r\n    \"episodeId\": 7860,\r\n    \"channelName\": \"TV Puls\",\r\n    \"channelUuid\": \"53faeed55e2fcf3f2394167ac9ed8474\",\r\n    \"channelNumber\": \"7\",\r\n    \"start\": 1620842400,\r\n    \"stop\": 1620853200,\r\n    \"title\": \"Igrzyska śmierci: W pierścieniu ognia\",\r\n    \"subtitle\": \"dramat SF\",\r\n    \"summary\": \"dramat SF\",\r\n    \"description\": \"Katniss i Peeta wygrali turniej, w którym stawką było życie. Stali się zarzewiem buntu stłamszonego społeczeństwa. Prezydent znów zmusza ich do walki. Ekranizacja drugiej części trylogii Suzanne Collins powiela sprawdzony schemat pierwszej odsłony.\",\r\n    \"genre\": [\r\n      19\r\n    ],\r\n    \"nextEventId\": 7875\r\n  },\r\n  {\r\n    \"eventId\": 4123,\r\n    \"episodeId\": 4124,\r\n    \"channelName\": \"TV4\",\r\n    \"channelUuid\": \"2e2a2a21613cd2e23dd5f2330c1ac982\",\r\n    \"channelNumber\": \"6\",\r\n    \"start\": 1620844200,\r\n    \"stop\": 1620848400,\r\n    \"title\": \"Sprawiedliwi - Wydział Kryminalny - s. X, odc. 484\",\r\n    \"subtitle\": \"serial kryminalny\",\r\n    \"summary\": \"serial kryminalny\",\r\n    \"description\": \"Do szpitala trafia Grzesiak, który usiłował popełnić samobójstwo. Latoszek i Kłos nie znajdują niczego, co mogłoby popchnąć mężczyznę do tego desperackiego kroku. Ola nagle wycofuje się ze śledztwa.\",\r\n    \"genre\": [\r\n      16\r\n    ],\r\n    \"nextEventId\": 4125\r\n  }\r\n]"
+				},
+				"url": {
+					"raw": "localhost:5000/epg?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"epg"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get epg",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/epg?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"epg"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
