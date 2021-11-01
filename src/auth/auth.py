@@ -54,6 +54,7 @@ class UserAuth:
 
     def __verify_id(self, id, user_id):
         query = f"""SELECT user_id, tuner_id
+            FROM user_tuners
             WHERE user_id = ? AND tuner_id = ?"""
         args = [user_id, id]
 
