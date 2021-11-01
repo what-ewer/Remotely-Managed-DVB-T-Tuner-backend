@@ -39,7 +39,7 @@ class UserAuth:
     def check_login(self, user, password):
         id = self.__get_user_id(user, password)
         if not id:
-            return Response(json.dumps({"status": False, "tuner_ids": []}), status=400)
+            return Response(json.dumps({"status": False, "tuner_ids": []}), status=200)
         else:
             return Response(
                 json.dumps({"status": True, "tuner_ids": self.__get_user_tuners(id)}),
@@ -75,11 +75,11 @@ class UserAuth:
     def register(self, username, password):
         if self.__user_already_exists(username):
             return Response(
-                json.dumps(f"User with username {username} already exists"), status=400
+                json.dumps({"status": False, "text": "User with username {username} already exists"}), status=200
             )
         elif self.__register_user(username, password):
             return Response(
-                json.dumps(f"Successfully registered {username}"), status=200
+                json.dumps({"status": True, "text": "Successfully registered {username}"}), status=200
             )
         else:
             return Response(
