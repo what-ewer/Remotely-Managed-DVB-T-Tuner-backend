@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS information_needed (
+    tuner_id integer NOT NULL CONSTRAINT information_needed_pk PRIMARY KEY,
+    changed_recording_order_list boolean NOT NULL,
+    changed_settings boolean NOT NULL,
+    need_recording_file_list boolean NOT NULL,
+    need_epg boolean NOT NULL,
+    CONSTRAINT heartbeat_tuners FOREIGN KEY (tuner_id)
+    REFERENCES tuners (id)
+);
