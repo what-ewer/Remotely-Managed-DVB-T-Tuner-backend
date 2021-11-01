@@ -101,9 +101,9 @@ class OrdersAPI:
 
     def __post_additional_information(self, order_id, info):
         try:
-            query = f"""INSERT INTO record_information(order_id, channel_name, channel_id, start,
+            query = f"""INSERT INTO record_information(order_id, channel_name, channel_id, channel_number, start,
                     stop, title, subtitle, summary, description, record_size, file_name) \
-                VALUES({order_id}, '{info.channel_name}', '{info.channel_uuid}', {info.start}, {info.stop},
+                VALUES({order_id}, '{info.channel_name}', '{info.channel_uuid}', {info.channel_number}, {info.start}, {info.stop},
                 '{info.title}', '{info.subtitle}', '{info.summary}', '{info.description}', 0, NULL)"""
         except:
             return 0
