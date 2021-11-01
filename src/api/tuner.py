@@ -90,7 +90,7 @@ class TunerAPI:
             )
         users = self.__get_users_of_tuner(tuner_id)
         if users:
-            return Response(json.dumps(users), status=400)
+            return Response(json.dumps(users), status=200)
         else:
             return Response(
                 json.dumps(f"Failed to get a list of users from tuner"), status=400
