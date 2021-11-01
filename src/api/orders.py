@@ -184,9 +184,9 @@ class OrdersAPI:
         for m in mux_dates.values():
             m = sorted(m, key=lambda o: o[0])
             for i in range(len(m) - 1):
-                if m[i][1] >= m[i + 1][0]:
+                if m[i][1] > m[i + 1][0]:
                     return (False, "Orders are overlapping")
-        return (True, )
+        return (True, "")
 
     def __get_channels(self, id):
         query = """SELECT channels 
