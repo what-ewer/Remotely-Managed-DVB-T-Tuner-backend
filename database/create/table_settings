@@ -1,8 +1,0 @@
-CREATE TABLE IF NOT EXISTS settings (
-    tuner_id integer NOT NULL CONSTRAINT settings_pk PRIMARY KEY,
-    recording_location varchar(255),
-    tvh_username varchar(255),
-    tvh_password varchar(255),
-    CONSTRAINT settings_tuners FOREIGN KEY (tuner_id)
-    REFERENCES tuners (id)
-);

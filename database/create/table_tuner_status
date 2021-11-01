@@ -1,9 +1,0 @@
-CREATE TABLE IF NOT EXISTS tuner_status (
-    tuner_id integer NOT NULL CONSTRAINT tuner_status_pk PRIMARY KEY,
-    free_space integer NOT NULL,
-    is_recording boolean NOT NULL,
-    current_recording_time integer NOT NULL,
-    current_recording_size integer NOT NULL,
-    CONSTRAINT tuner_heartbeat_tuners FOREIGN KEY (tuner_id)
-    REFERENCES tuners (id)
-);
