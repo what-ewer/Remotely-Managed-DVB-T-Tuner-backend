@@ -14,7 +14,7 @@ class OrdersAPI:
         self.channel_api = ChannelsAPI(db_manager)
 
     def get_orders(self, id, return_list=False):
-        query = f"SELECT channel_id, start, end FROM record_orders \
+        query = f"SELECT id, channel_id, start, end FROM record_orders \
             WHERE tuner_id = {id}"
 
         ts = datetime.datetime.now().timestamp()
@@ -24,10 +24,10 @@ class OrdersAPI:
             return Response(str(exc), status=500)
 
         result = [
-            {"channel_id": str(o[0]), "start": o[1], "end": o[2]}
+            {"id": o[0], "channel_id": str(o[1]), "start": o[2], "end": o[3]}
             for o in orders
-            if o[2]
-            > ts  # o[2] includes started programs that didn't end yet, 0[1] returns only not started
+            if o[3]
+            > ts  # o[3] includes started programs that didn't end yet, 0[2] returns only not started
         ]
 
         return (
