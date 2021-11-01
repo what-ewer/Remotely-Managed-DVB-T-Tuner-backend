@@ -68,7 +68,17 @@ class Settings:
 
 
 class RecordedFiles:
-    def __init__(self, order_id, program_name, file_name, channel_id, record_size, start, end, **kwargs):
+    def __init__(
+        self,
+        order_id,
+        program_name,
+        file_name,
+        channel_id,
+        record_size,
+        start,
+        end,
+        **kwargs
+    ):
         self.order_id = order_id
         self.program_name = program_name
         self.file_name = file_name
@@ -93,8 +103,16 @@ class InformationNeeded:
         self.need_epg = need_epg
 
 
-class RecordOrders:
+class Orders:
     def __init__(self, channel_id, start, end, **kwargs):
+        self.channel_id = channel_id
+        self.start = start
+        self.end = end
+
+
+class RecordOrders:
+    def __init__(self, id, channel_id, start, end, **kwargs):
+        self.id = id
         self.channel_id = channel_id
         self.start = start
         self.end = end
@@ -145,6 +163,7 @@ class Channel:
         self.name = name
         self.multiplex_id = multiplex_id
         self.multiplex_name = multiplex_name
+
 
 class RecordInformation:
     def __init__(

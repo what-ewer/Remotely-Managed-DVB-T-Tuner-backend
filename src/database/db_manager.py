@@ -39,10 +39,30 @@ class DBManager:
         self._drop_database()
         self._setup_tables()
 
-    def execute_query(self, query, get_inserted_id=False):
+    def run_query(
+        self,
+        query,
+        args,
+        return_id=False,
+        return_result=True,
+        return_on_success=True,
+        return_on_error=False,
+        print_error=True,
+    ):
+        try:
+            query_result = self.execute_query(
+                query, get_inserted_id=return_id, args=args
+            )
+        except Exception as exc:
+            if print_error:
+                print(exc)
+            return return_on_error
+        return query_result if return_result else return_on_success
+
+    def execute_query(self, query, get_inserted_id=False, args=[]):
         con = sqlite3.connect("rmdvbt.db")
         cur = con.cursor()
-        cur.execute(query)
+        cur.execute(query, args)
         res = cur.fetchall()
         if get_inserted_id:
             res = cur.lastrowid

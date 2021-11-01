@@ -1,10 +1,7 @@
 from flask import Response
 import json, datetime, requests
 from src.api import heartbeat
-from src.database.db_model import (
-    EPG,
-    JsonConverter
-)
+from src.database.db_model import EPG, JsonConverter, Channel, RecordInformation, RecordOrders
 from api.channels import ChannelsAPI
 
 
@@ -13,135 +10,170 @@ class OrdersAPI:
         self.db_manager = db_manager
         self.channel_api = ChannelsAPI(db_manager)
 
-    def get_orders(self, id, return_list=False):
-        query = f"SELECT id, channel_id, start, end FROM record_orders \
-            WHERE tuner_id = {id}"
+    def get_orders(self, id):
+        query = """SELECT ri.order_id,
+            ri.channel_name,
+            ri.channel_id,
+            ri.channel_number,
+            ri.start,
+            ri.stop,
+            ri.title,
+            ri.subtitle,
+            ri.summary,
+            ri.description,
+            ri.record_size,
+            ri.file_name
+            FROM record_orders AS ro
+            INNER JOIN record_information as ri
+            ON ro.id = ri.order_id
+            WHERE tuner_id = ?"""
+        args = [id]
 
-        ts = datetime.datetime.now().timestamp()
-        try:
-            orders = self.db_manager.execute_query(query)
-        except Exception as exc:
-            return Response(str(exc), status=500)
-
-        result = [
-            {"id": o[0], "channel_id": str(o[1]), "start": o[2], "end": o[3]}
-            for o in orders
-            if o[3]
-            > ts  # o[3] includes started programs that didn't end yet, 0[2] returns only not started
-        ]
-
-        return (
-            Response(json.dumps(result), status=200, mimetype="json")
-            if not return_list
-            else result
-        )
+        result = self.db_manager.run_query(query, args)
+        if result:
+            ts = datetime.datetime.now().timestamp()
+            orders = list(
+                filter(lambda o: o.stop > ts, [RecordInformation(*o) for o in result])
+            )
+            return Response(
+                json.dumps(orders, default=lambda o: o.__dict__, indent=4),
+                mimetype="json",
+                status=200,
+            )
+        else:
+            return Response("Something went wrong", status=500)
 
     def post_orders(self, id, username, password, orders):
-        requests.post(url=f"{heartbeat.url}/ask", params={"id": id, "information": "changed_recording_order_list"}, auth=(username, password))
         info_ids = []
-        if self.__check_overlapping(id, orders):
+        channels = self.__get_channels(id)
+        if not channels:
+            return Response(
+                json.dumps({"ids": info_ids, "msg": "There are no channels for this tuner"}),
+                status=400,
+            )
+        if self.__check_overlapping(id, orders, channels):
+            requests.post(
+                url=f"{heartbeat.url}/ask",
+                params={"id": id, "information": "changed_recording_order_list"},
+                auth=(username, password),
+            )
+
             for o in orders:
                 order_info = self.__get_additional_information(id, o)
                 if order_info:
-                    order_id = self.post_order(id, o, True, True)
+                    order_id = self.post_order(id, o, True)
                     if order_id:
-                        information_id = self.__post_additional_information(order_id, order_info[0])
+                        information_id = self.__post_additional_information(
+                            order_id, order_info[0]
+                        )
                         info_ids.append(information_id)
-            return Response(json.dumps({"ids": info_ids, "msg": "successfully posted orders"}), status=200)
+                else:
+                    return Response(
+                        json.dumps({"ids": info_ids, "msg": "No such program in EPG"}),
+                        status=400,
+                    )
+            return Response(
+                json.dumps({"ids": info_ids, "msg": "successfully posted orders"}),
+                status=200,
+            )
         else:
-            return Response(json.dumps({"ids": info_ids, "msg": "Orders are overlapping"}), status=400)
+            return Response(
+                json.dumps({"ids": info_ids, "msg": "Orders are overlapping"}),
+                status=400,
+            )
 
-    def post_order(self, id, order, checked=False, return_id=False):
-        try:
-            if checked or self.__check_overlapping(id, order):
-                query = f"""INSERT INTO record_orders(tuner_id, channel_id, start, end) \
-                    VALUES({id}, '{order.channel_id}', {order.start}, {order.end})"""
-        except:
-            return Response("Wrong order", status=400) if not return_id else 0
-        else:
-            try:
-                order_id = self.db_manager.execute_query(query, True)
-            except Exception as exc:
-                return Response(str(exc), status=500) if not return_id else 0
-        return Response("Successfully posted orders", status=200) if not return_id else order_id
+    def post_order(self, id, order, checked=False):
+        if checked or self.__check_overlapping(id, order):
+            query = """INSERT INTO record_orders(tuner_id, channel_id, start, end)
+                VALUES(?, ?, ?, ?)"""
+            args = [id, order.channel_id, order.start, order.end]
+            return self.db_manager.run_query(query, args, return_id=True)
+        return 0
 
     def delete_orders(self, tuner_id, order_id):
         if not self.__order_exists(order_id):
-            return Response("Order doesnt exist", status=406)
-        try:
-            query = f"""DELETE FROM record_orders WHERE tuner_id = {tuner_id} and id = {order_id}"""
-        except Exception as exc:
-            return Response(str(exc), status=500)
+            return Response("Order does not exist", status=406)
+
+        query = """DELETE FROM record_orders 
+            WHERE tuner_id = ? AND id = ?"""
+        args = [tuner_id, order_id]
+
+        if self.db_manager.run_query(query, args, return_result=False):
+            return Response("Successfully deleted order", status=200)
         else:
-            try:
-                self.db_manager.execute_query(query)
-            except Exception as exc:
-                return Response(str(exc), status=500)
-        return Response("Successfully deleted order", status=200)
+            return Response("Something went wrong", status=500)
 
     def __get_additional_information(self, id, order):
         epg = self.__get_epg(id)
         if epg:
-            epg = JsonConverter.convert_any(epg, EPG)
-            to_be_downloaded = list(filter(lambda p: (p.channel_uuid == order.channel_id
-                and p.start == order.start and p.stop == order.end), epg))
+            to_be_downloaded = list(
+                filter(
+                    lambda p: (
+                        p.channel_uuid == order.channel_id
+                        and p.start == order.start
+                        and p.stop == order.end
+                    ),
+                    epg,
+                )
+            )
             return to_be_downloaded
         return []
 
-        
-    def __get_epg(self, id):        
-        query = f"SELECT epg FROM tuners \
-            WHERE id = {id}"
-        try:
-            res = self.db_manager.execute_query(query)
-        except Exception as exc:
-            return Response(str(exc), status=500)
-        res = res[0][0] if res else ""
-        return res
+    def __get_epg(self, id):
+        query = """SELECT epg 
+            FROM tuners
+            WHERE id = ?"""
+        args = [id]
+
+        result = self.db_manager.run_query(query, args)
+        if result[0][0]:
+            epg = JsonConverter.convert_any(result[0][0], EPG)
+            return epg
+        else:
+            return False
 
     def __post_additional_information(self, order_id, info):
-        try:
-            query = f"""INSERT INTO record_information(order_id, channel_name, channel_id, channel_number, start,
-                    stop, title, subtitle, summary, description, record_size, file_name) \
-                VALUES({order_id}, '{info.channel_name}', '{info.channel_uuid}', {info.channel_number}, {info.start}, {info.stop},
-                '{info.title}', '{info.subtitle}', '{info.summary}', '{info.description}', 0, NULL)"""
-        except:
-            return 0
-        else:
-            try:
-                order_id = self.db_manager.execute_query(query, True)
-            except Exception as exc:
-                return 0
-        return order_id
+        query = """INSERT INTO record_information(order_id, channel_name, channel_id, channel_number, start,
+            stop, title, subtitle, summary, description, record_size, file_name)
+            VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL)"""
+        args = [
+            order_id,
+            info.channel_name,
+            info.channel_uuid,
+            info.channel_number,
+            info.start,
+            info.stop,
+            info.title,
+            info.subtitle,
+            info.summary,
+            info.description,
+        ]
+
+        result = self.db_manager.run_query(query, args, return_id=True)
+        return result
 
     def __order_exists(self, order_id):
-        try:
-            query = f"""SELECT id FROM record_orders
-            WHERE id = '{order_id}'"""
-        except Exception as exc:
-            return True
-        else:
-            try:
-                id = self.db_manager.execute_query(query)
-            except Exception as exc:
-                return True
-        return id
+        query = """SELECT id 
+            FROM record_orders
+            WHERE id = ?"""
+        args = [order_id]
 
-    def __check_overlapping(self, id, new_orders):
-        orders = self.get_orders(id, True)
-        channels = json.loads(self.channel_api.get_channels(id, True) or "null")
+        return self.db_manager.run_query(query, args)
+
+    def __check_overlapping(self, id, new_orders, channels):
+        orders = self.__get_orders(id)
         multiplexes = {}
         muxes = set()
         if not channels:
             return True
 
         for c in channels:
-            ch_id = c["id"]
-            mux_id = c["multiplex_id"]
+            ch_id = c.id
+            mux_id = c.multiplex_id
             muxes.add(mux_id)
             multiplexes[ch_id] = mux_id
 
-        all_dates = [(o["start"], o["end"], o["channel_id"]) for o in orders]
+        all_dates = [(o.start, o.end, o.channel_id) for o in orders]
         all_dates.extend([(o.start, o.end, o.channel_id) for o in new_orders])
         mux_dates = {mux_id: [] for mux_id in muxes}
         for d in all_dates:
@@ -156,3 +188,31 @@ class OrdersAPI:
                 if m[i][1] >= m[i + 1][0]:
                     return False
         return True
+
+    def __get_channels(self, id):
+        query = """SELECT channels 
+            FROM tuners
+            WHERE id = ?"""
+        args = [id]
+
+        result = self.db_manager.run_query(query, args)
+        if result[0][0]:
+            channels = JsonConverter.convert_any(result[0][0], Channel)
+            return channels
+        return ""
+
+    def __get_orders(self, id):
+        query = """SELECT id, channel_id, start, end 
+            FROM record_orders
+            WHERE tuner_id = ?"""
+        args = [id]
+
+        result = self.db_manager.run_query(query, args)
+        if result:
+            ts = datetime.datetime.now().timestamp()
+            orders = list(
+                filter(lambda o: o.end > ts, [RecordOrders(*o) for o in result])
+            )
+            return orders
+        else:
+            return []

@@ -9,57 +9,64 @@ class FavoritesAPI:
     def add_favorite(self, username, name):
         user_id = self.__get_user_id(username)
         if user_id:
-            query = f"""INSERT INTO favorites (user_id, favorite)
-                VALUES({user_id}, '{name}')"""
+            if self.__already_favorited(user_id, name):
+                return Response("Favorite already added", status=500)
+            query = """INSERT INTO favorites (user_id, favorite)
+                VALUES(?, ?)"""
+            args = [user_id, name]
 
-            try:
-                res = self.db_manager.execute_query(query)
-            except Exception as exc:
-                return Response(str(exc), status=400)
-
-            return Response("Successfully added favorite to user", status=200)
+            if self.db_manager.run_query(query, args, return_result=False):
+                return Response("Successfully added favorite to user", status=201)
+            else:
+                return Response("Something went wrong", status=500)
         else:
-            return Response("Couldnt recognize user", status=400)
-
+            return Response("Could not recognize user", status=500)
 
     def get_favorites(self, username):
-        query = f"""SELECT favorite
+        query = """SELECT favorite
             FROM favorites
             INNER JOIN users
             ON users.id = favorites.user_id
-            WHERE users.login = '{username}'"""
+            WHERE users.login = ?"""
+        args = [username]
 
-        try:
-            res = self.db_manager.execute_query(query)
-        except Exception as exc:
-            return Response(str(exc), status=400)
-
-        return Response(json.dumps(res), status=200)
+        result = self.db_manager.run_query(query, args)
+        if result:
+            return Response(json.dumps(result), status=200)
+        else:
+            return Response("Something went wrong", status=500)
 
     def remove_favorite(self, username, name):
         user_id = self.__get_user_id(username)
         if user_id:
-            query = f"""DELETE FROM favorites
-                WHERE user_id={user_id} AND favorite='{name}'"""
+            if not self.__already_favorited(user_id, name):
+                return Response("Favorite does not exist", status=500)
 
-            try:
-                res = self.db_manager.execute_query(query)
-            except Exception as exc:
-                return Response(str(exc), status=400)
-
-            return Response("Successfully removed favorite to user", status=200)
+            query = """DELETE FROM favorites
+                WHERE user_id = ? AND favorite = ?"""
+            args = [user_id, name]
+            result = self.db_manager.run_query(query, args, return_result=False)
+            if result:
+                return Response("Successfully removed favorite", status=200)
+            else:
+                return Response("Something went wrong", status=500)
         else:
-            return Response("Couldnt recognize user", status=400)
+            return Response("Couldnt recognize user", status=500)
 
-        
     def __get_user_id(self, username):
-        query = f"""SELECT id
+        query = """SELECT id
             FROM users
-            WHERE login = '{username}'"""
+            WHERE login = ?"""
+        args = [username]
 
-        try:
-            res = self.db_manager.execute_query(query)
-        except Exception as exc:
-            return 0
+        result = self.db_manager.run_query(query, args)
+        return result[0][0] if result else 0
 
-        return res[0][0] if res else 0
+    def __already_favorited(self, user_id, name):
+        query = """SELECT *
+            FROM favorites
+            WHERE user_id = ? AND favorite = ?"""
+        args = [user_id, name]
+
+        result = self.db_manager.run_query(query, args)
+        return result
