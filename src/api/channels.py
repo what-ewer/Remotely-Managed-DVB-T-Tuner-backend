@@ -24,7 +24,6 @@ class ChannelsAPI:
             return Response("Something went wrong", status=500)
 
     def post_channels(self, id, channels):
-
         query = f"""UPDATE tuners
             SET channels = '{json.dumps(channels)}'
             WHERE id = ?"""

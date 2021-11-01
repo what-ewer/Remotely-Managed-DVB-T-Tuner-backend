@@ -41,7 +41,7 @@ class DBManager:
 
     def run_query(self, query, args, return_id=False, return_result=True, return_on_success=True, return_on_error=False, print_error=True):
         try:
-            query_result = self.execute_query(query, get_inserted_id=return_id, with_args=args)
+            query_result = self.execute_query(query, get_inserted_id=return_id, args=args)
         except Exception as exc:
             if print_error:
                 print(exc)
