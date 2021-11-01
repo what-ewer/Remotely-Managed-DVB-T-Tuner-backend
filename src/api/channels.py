@@ -1,33 +1,36 @@
 from flask import Response
 import json
+from src.database.db_model import JsonConverter, Channel
 
 
 class ChannelsAPI:
     def __init__(self, db_manager):
         self.db_manager = db_manager
 
-    def get_tuner_info(self, query, return_list=False):
-        try:
-            res = self.db_manager.execute_query(query)
-        except Exception as exc:
-            return Response(str(exc), status=500)
-        res = res[0][0] if res else ""
-        return Response(res, status=200, mimetype="json") if not return_list else res
+    def get_channels(self, id):
+        query = """SELECT channels FROM tuners
+            WHERE id = ?"""
+        args = [id]
 
-    def get_channels(self, id, return_list=False):
-        query = f"SELECT channels FROM tuners \
-            WHERE id = {id}"
-        return self.get_tuner_info(query, return_list)
+        result = self.db_manager.run_query(query, args)
+        if result:
+            channels = JsonConverter.convert_any(result[0][0], Channel)
+            return Response(
+                json.dumps(channels, default=lambda o: o.__dict__, indent=4),
+                mimetype="json",
+                status=200,
+            )
+        else:
+            return Response("Something went wrong", status=500)
 
     def post_channels(self, id, channels):
 
         query = f"""UPDATE tuners
-        SET channels = '{json.dumps(channels)}'
-        WHERE id = {id}"""
+            SET channels = '{json.dumps(channels)}'
+            WHERE id = ?"""
+        args = [id]
 
-        try:
-            self.db_manager.execute_query(query)
-        except Exception as exc:
-            return Response(str(exc), status=500)
-
-        return Response("successfully updated channels", status=200)
+        if self.db_manager.run_query(query, args, return_result=False):
+            return Response("Successfully updated channels", status=201)
+        else:
+            return Response("Something went wrong", status=500)
