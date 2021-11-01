@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS record_information (
     order_id integer NOT NULL,
     channel_name varchar(255),
     channel_id varchar(255),
+    channel_number int,
     start bigint,
     stop bigint,
     title varchar(255),
