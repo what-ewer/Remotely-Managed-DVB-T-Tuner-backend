@@ -51,7 +51,8 @@ class OrdersAPI:
                 json.dumps({"ids": info_ids, "msg": "There are no channels for this tuner"}),
                 status=400,
             )
-        if self.__check_overlapping(id, orders, channels):
+        (res, err_msg) = self.__check_overlapping(id, orders, channels)
+        if res:
             requests.post(
                 url=f"{heartbeat.url}/ask",
                 params={"id": id, "information": "changed_recording_order_list"},
@@ -78,7 +79,7 @@ class OrdersAPI:
             )
         else:
             return Response(
-                json.dumps({"ids": info_ids, "msg": "Orders are overlapping"}),
+                json.dumps({"ids": info_ids, "msg": err_msg}),
                 status=400,
             )
 
@@ -164,8 +165,6 @@ class OrdersAPI:
         orders = self.__get_orders(id)
         multiplexes = {}
         muxes = set()
-        if not channels:
-            return True
 
         for c in channels:
             ch_id = c.id
@@ -178,7 +177,7 @@ class OrdersAPI:
         mux_dates = {mux_id: [] for mux_id in muxes}
         for d in all_dates:
             if d[2] not in multiplexes.keys():
-                return False
+                return (False, "There is no such channel in channels")
             else:
                 mux_dates[multiplexes[d[2]]].append((d[0], d[1]))
 
@@ -186,8 +185,8 @@ class OrdersAPI:
             m = sorted(m, key=lambda o: o[0])
             for i in range(len(m) - 1):
                 if m[i][1] >= m[i + 1][0]:
-                    return False
-        return True
+                    return (False, "Orders are overlapping")
+        return (True, )
 
     def __get_channels(self, id):
         query = """SELECT channels 
