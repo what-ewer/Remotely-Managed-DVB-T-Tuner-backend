@@ -245,7 +245,7 @@ class TunerAPI:
 
     def __get_tuners_of_user(self, username):
         try:
-            query = f"""SELECT user_tuners.tuner_id, tuners.tuner_name
+            query = f"""SELECT user_tuners.tuner_id, tuners.tuner_name, user_tuners.role
             FROM user_tuners
             INNER JOIN tuners
             ON tuners.id = user_tuners.tuner_id
