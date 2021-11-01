@@ -1,7 +1,7 @@
 from flask import Response
 import json, datetime, requests
 from src.api import heartbeat
-from src.database.db_model import EPG, JsonConverter, Channel, RecordOrders
+from src.database.db_model import EPG, JsonConverter, Channel, RecordInformation, RecordOrders
 from api.channels import ChannelsAPI
 
 
@@ -11,8 +11,21 @@ class OrdersAPI:
         self.channel_api = ChannelsAPI(db_manager)
 
     def get_orders(self, id):
-        query = """SELECT id, channel_id, start, end 
-            FROM record_orders
+        query = """SELECT ri.order_id,
+            ri.channel_name,
+            ri.channel_id,
+            ri.channel_number,
+            ri.start,
+            ri.stop,
+            ri.title,
+            ri.subtitle,
+            ri.summary,
+            ri.description,
+            ri.record_size,
+            ri.file_name
+            FROM record_orders AS ro
+            INNER JOIN record_information as ri
+            ON ro.id = ri.order_id
             WHERE tuner_id = ?"""
         args = [id]
 
@@ -20,7 +33,7 @@ class OrdersAPI:
         if result:
             ts = datetime.datetime.now().timestamp()
             orders = list(
-                filter(lambda o: o.end > ts, [RecordOrders(*o) for o in result])
+                filter(lambda o: o.stop > ts, [RecordInformation(*o) for o in result])
             )
             return Response(
                 json.dumps(orders, default=lambda o: o.__dict__, indent=4),
@@ -32,7 +45,13 @@ class OrdersAPI:
 
     def post_orders(self, id, username, password, orders):
         info_ids = []
-        if self.__check_overlapping(id, orders):
+        channels = self.__get_channels(id)
+        if not channels:
+            return Response(
+                json.dumps({"ids": info_ids, "msg": "There are no channels for this tuner"}),
+                status=400,
+            )
+        if self.__check_overlapping(id, orders, channels):
             requests.post(
                 url=f"{heartbeat.url}/ask",
                 params={"id": id, "information": "changed_recording_order_list"},
@@ -48,6 +67,11 @@ class OrdersAPI:
                             order_id, order_info[0]
                         )
                         info_ids.append(information_id)
+                else:
+                    return Response(
+                        json.dumps({"ids": info_ids, "msg": "No such program in EPG"}),
+                        status=400,
+                    )
             return Response(
                 json.dumps({"ids": info_ids, "msg": "successfully posted orders"}),
                 status=200,
@@ -102,7 +126,7 @@ class OrdersAPI:
         args = [id]
 
         result = self.db_manager.run_query(query, args)
-        if result:
+        if result[0][0]:
             epg = JsonConverter.convert_any(result[0][0], EPG)
             return epg
         else:
@@ -136,9 +160,8 @@ class OrdersAPI:
 
         return self.db_manager.run_query(query, args)
 
-    def __check_overlapping(self, id, new_orders):
+    def __check_overlapping(self, id, new_orders, channels):
         orders = self.__get_orders(id)
-        channels = self.__get_channels(id)
         multiplexes = {}
         muxes = set()
         if not channels:
@@ -167,14 +190,16 @@ class OrdersAPI:
         return True
 
     def __get_channels(self, id):
-        query = """SELECT channels FROM tuners
+        query = """SELECT channels 
+            FROM tuners
             WHERE id = ?"""
         args = [id]
 
         result = self.db_manager.run_query(query, args)
-        if result:
+        if result[0][0]:
             channels = JsonConverter.convert_any(result[0][0], Channel)
-        return channels if channels else ""
+            return channels
+        return ""
 
     def __get_orders(self, id):
         query = """SELECT id, channel_id, start, end 
