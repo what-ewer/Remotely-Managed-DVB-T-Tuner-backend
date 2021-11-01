@@ -10,7 +10,7 @@ class SettingsAPI:
         self.db_manager = db_manager
 
     def get_settings(self, id):
-        query = f"""SELECT recording_location, tvh_username, tvh_password 
+        query = """SELECT recording_location, tvh_username, tvh_password 
             FROM settings
             WHERE tuner_id = ?"""
         args = [id]
@@ -27,8 +27,8 @@ class SettingsAPI:
             return Response("Something went wrong", status=500)
 
     def post_settings(self, id, username, password, settings):
-        query = f"""INSERT OR REPLACE INTO settings(tuner_id, recording_location, tvh_username, tvh_password)
-                        VALUES(?, ?, ?, ?)"""
+        query = """INSERT OR REPLACE INTO settings(tuner_id, recording_location, tvh_username, tvh_password)
+            VALUES(?, ?, ?, ?)"""
         args = [
             id,
             settings.recording_location,

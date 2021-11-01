@@ -1,6 +1,6 @@
 from flask import Response
 import json
-from src.database.db_model import JsonConverter, TunerStatus
+from src.database.db_model import TunerStatus
 
 
 class StatusAPI:
@@ -8,7 +8,7 @@ class StatusAPI:
         self.db_manager = db_manager
 
     def post_status(self, id, status):
-        query = f"""INSERT OR REPLACE INTO tuner_status(tuner_id, free_space, is_recording, current_recording_time, current_recording_size)
+        query = """INSERT OR REPLACE INTO tuner_status(tuner_id, free_space, is_recording, current_recording_time, current_recording_size)
             VALUES(?, ?, ?, ?, ?)"""
         args = [
             id,
@@ -24,7 +24,7 @@ class StatusAPI:
             return Response("Something went wrong", status=500)
 
     def get_status(self, id):
-        query = f"""SELECT free_space, is_recording, current_recording_size, current_recording_time 
+        query = """SELECT free_space, is_recording, current_recording_size, current_recording_time 
             FROM tuner_status
             WHERE tuner_id = ?"""
         args = [id]

@@ -39,9 +39,20 @@ class DBManager:
         self._drop_database()
         self._setup_tables()
 
-    def run_query(self, query, args, return_id=False, return_result=True, return_on_success=True, return_on_error=False, print_error=True):
+    def run_query(
+        self,
+        query,
+        args,
+        return_id=False,
+        return_result=True,
+        return_on_success=True,
+        return_on_error=False,
+        print_error=True,
+    ):
         try:
-            query_result = self.execute_query(query, get_inserted_id=return_id, args=args)
+            query_result = self.execute_query(
+                query, get_inserted_id=return_id, args=args
+            )
         except Exception as exc:
             if print_error:
                 print(exc)
