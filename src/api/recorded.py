@@ -41,6 +41,9 @@ class RecordedAPI:
         posted = []
         not_posted = []
         updated = []
+        recorded_ids = [o.order_id for o in recorded]
+        if not self.__remove_deleted_recorded(id, recorded_ids):
+            return Response("Something went wrong", status=500)
         for o in recorded:
             if self.__order_with_id_exists(o.order_id):
                 if not self.__recorded_exists(o.order_id):
@@ -63,6 +66,17 @@ class RecordedAPI:
         return Response(
             json.dumps({"posted_ids": posted, "not_posted": not_posted, "updated": updated}), status=201
         )
+
+    def __remove_deleted_recorded(self, id, recorded_ids):
+        query = "DELETE FROM recorded_files WHERE tuner_id = ?"
+        if recorded_ids:
+            query += " AND ("
+            query += "order_id != ?"
+            for _ in recorded_ids[1:]:
+                query += " AND order_id != ?"
+            query += ")"
+        args = [id, *recorded_ids]
+        return self.db_manager.run_query(query, args, return_result=False)
 
     def __update_information(self, order_id, record_size, filename):
         query = """UPDATE record_information
