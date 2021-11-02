@@ -82,7 +82,7 @@ Currently avalible + planned endpoints
 | `/settings`             | id, body(Settings)     | POST  | post settings of a tuner                          | text
 | `/settings`             | id                     | GET   | get settings of a tuner                           | {Settings()}
 | **Recorded API**        |                        |       |                                                   |
-| `/recorded`             | id, body(RecordedFiles)| POST  | post recorded files of a tuner                    | {"posted_ids": [id, id, ..], "not_posted": [id, id, ..]}
+| `/recorded`             | id, body(RecordedFiles)| POST  | post recorded files of a tuner                    | {"posted_ids": [id, id, ..], "not_posted": [id, id, ..], "update": [id, id, ..]}
 | `/recorded`             | id                     | GET   | get recorded files of a tuner                     | {RecordedFiles()}
 | **Heartbeat API**       |                        |       |                                                   |
 | `/heartbeat`            | id                     | GET   | get heartbeat of a tuner                          | {InformationNeeded()}

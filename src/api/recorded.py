@@ -28,9 +28,9 @@ class RecordedAPI:
 
         result = self.db_manager.run_query(query, args)
         if result:
-            tuner_status = RecordInformation(*result[0])
+            recorded = [RecordInformation(*r) for r in result]
             return Response(
-                json.dumps(tuner_status, default=lambda o: o.__dict__, indent=4),
+                json.dumps(recorded, default=lambda o: o.__dict__, indent=4),
                 mimetype="json",
                 status=200,
             )
