@@ -41,7 +41,7 @@ class UserAuth:
                 status=200,
             )
         else:
-            return Response(json.dumps({"status": False, "tuner_ids": []}), status=400)
+            return Response(json.dumps({"status": False, "tuner_ids": []}), status=200)
 
     def __verify_user(self, username, password):
         query = """SELECT id, login, password 
