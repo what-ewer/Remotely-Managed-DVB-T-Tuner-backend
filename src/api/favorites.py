@@ -10,7 +10,7 @@ class FavoritesAPI:
         user_id = self.__get_user_id(username)
         if user_id:
             if self.__already_favorited(user_id, name):
-                return Response("Favorite already added", status=500)
+                return Response("Favorite already added", status=400)
             query = """INSERT INTO favorites (user_id, favorite)
                 VALUES(?, ?)"""
             args = [user_id, name]
