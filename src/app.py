@@ -266,7 +266,7 @@ def information_provided():
 @app.route("/favorites", methods=["POST"])
 @auth.login_required
 def add_favorite():
-    return execute_function(favorites_api.add_favorite, ["username", "name"])
+    return execute_function(favorites_api.add_favorite, ["username", "name", "series"])
 
 
 @app.route("/favorites", methods=["GET"])
