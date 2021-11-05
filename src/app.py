@@ -278,7 +278,7 @@ def get_favorites():
 @app.route("/favorites", methods=["DELETE"])
 @auth.login_required
 def remove_favorite():
-    return execute_function(favorites_api.remove_favorite, ["username", "name"])
+    return execute_function(favorites_api.remove_favorite, ["username", "name", "series"])
 
 
 # temporary endpoints for some features
