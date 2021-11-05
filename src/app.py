@@ -266,7 +266,7 @@ def information_provided():
 @app.route("/favorites", methods=["POST"])
 @auth.login_required
 def add_favorite():
-    return execute_function(favorites_api.add_favorite, ["username", "name"])
+    return execute_function(favorites_api.add_favorite, ["username", "name", "series"])
 
 
 @app.route("/favorites", methods=["GET"])
@@ -278,7 +278,7 @@ def get_favorites():
 @app.route("/favorites", methods=["DELETE"])
 @auth.login_required
 def remove_favorite():
-    return execute_function(favorites_api.remove_favorite, ["username", "name"])
+    return execute_function(favorites_api.remove_favorite, ["username", "name", "series"])
 
 
 # temporary endpoints for some features

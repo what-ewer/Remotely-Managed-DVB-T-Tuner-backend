@@ -21,6 +21,7 @@ class OrdersAPI:
             ri.subtitle,
             ri.summary,
             ri.description,
+            ri.genres,
             ri.record_size,
             ri.file_name
             FROM record_orders AS ro
@@ -135,8 +136,8 @@ class OrdersAPI:
 
     def __post_additional_information(self, order_id, info):
         query = """INSERT INTO record_information(order_id, channel_name, channel_id, channel_number, start,
-            stop, title, subtitle, summary, description, record_size, file_name)
-            VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL)"""
+            stop, title, subtitle, summary, description, genres, record_size, file_name)
+            VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL)"""
         args = [
             order_id,
             info.channel_name,
@@ -148,6 +149,7 @@ class OrdersAPI:
             info.subtitle,
             info.summary,
             info.description,
+            info.genre,
         ]
 
         result = self.db_manager.run_query(query, args, return_id=True)

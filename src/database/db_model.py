@@ -153,7 +153,7 @@ class EPG:
         self.subtitle = subtitle
         self.summary = summary
         self.description = description
-        self.genre = genre
+        self.genre = ",".join(str(g) for g in genre) if genre else "0"
         self.next_event_id = nextEventId
 
 
@@ -178,6 +178,7 @@ class RecordInformation:
         subtitle,
         summary,
         description,
+        genres,
         record_size,
         file_name,
         **kwargs
@@ -192,5 +193,6 @@ class RecordInformation:
         self.subtitle = subtitle
         self.summary = summary
         self.description = description
+        self.genres = [int(g) for g in genres.split(",")]
         self.record_size = record_size
         self.file_name = file_name
