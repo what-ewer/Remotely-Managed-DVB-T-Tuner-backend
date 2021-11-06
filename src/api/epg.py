@@ -15,12 +15,20 @@ class EpgAPI:
 
         result = self.db_manager.run_query(query, args)
         if result:
-            epg = JsonConverter.convert_any(result[0][0], EPG)
-            return Response(
-                json.dumps(epg, default=lambda o: o.__dict__, indent=4),
-                mimetype="json",
-                status=200,
-            )
+            try:
+                epg = JsonConverter.convert_any(result[0][0], EPG)
+            except:
+                return Response(
+                    json.dumps([], default=lambda o: o.__dict__, indent=4),
+                    mimetype="json",
+                    status=200,
+                )
+            else:
+                return Response(
+                    json.dumps(epg, default=lambda o: o.__dict__, indent=4),
+                    mimetype="json",
+                    status=200,
+                )
         else:
             return Response("Something went wrong", status=500)
 

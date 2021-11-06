@@ -1,7 +1,13 @@
 from flask import Response
 import json, datetime, requests
 from src.api import heartbeat
-from src.database.db_model import EPG, JsonConverter, Channel, RecordInformation, RecordOrders
+from src.database.db_model import (
+    EPG,
+    JsonConverter,
+    Channel,
+    RecordInformation,
+    RecordOrders,
+)
 from api.channels import ChannelsAPI
 
 
@@ -49,7 +55,9 @@ class OrdersAPI:
         channels = self.__get_channels(id)
         if not channels:
             return Response(
-                json.dumps({"ids": info_ids, "msg": "There are no channels for this tuner"}),
+                json.dumps(
+                    {"ids": info_ids, "msg": "There are no channels for this tuner"}
+                ),
                 status=400,
             )
         (res, err_msg) = self.__check_overlapping(id, orders, channels)
@@ -197,7 +205,7 @@ class OrdersAPI:
         args = [id]
 
         result = self.db_manager.run_query(query, args)
-        if result[0][0]:
+        if result and result[0][0]:
             channels = JsonConverter.convert_any(result[0][0], Channel)
             return channels
         return ""

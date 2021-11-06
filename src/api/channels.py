@@ -14,12 +14,21 @@ class ChannelsAPI:
 
         result = self.db_manager.run_query(query, args)
         if result:
-            channels = JsonConverter.convert_any(result[0][0], Channel)
-            return Response(
-                json.dumps(channels, default=lambda o: o.__dict__, indent=4),
-                mimetype="json",
-                status=200,
-            )
+            try:
+                channels = JsonConverter.convert_any(result[0][0], Channel)
+            except:
+                return Response(
+                    json.dumps([], default=lambda o: o.__dict__, indent=4),
+                    mimetype="json",
+                    status=200,
+                )
+
+            else:
+                return Response(
+                    json.dumps(channels, default=lambda o: o.__dict__, indent=4),
+                    mimetype="json",
+                    status=200,
+                )
         else:
             return Response("Something went wrong", status=500)
 

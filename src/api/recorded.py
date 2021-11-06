@@ -57,7 +57,7 @@ class RecordedAPI:
                         return Response("Something went wrong", status=500)
                     else:
                         updated.append(o.order_id)
-                
+
                 if not self.__update_information(
                     o.order_id, o.record_size, o.file_name
                 ):
@@ -65,7 +65,10 @@ class RecordedAPI:
             else:
                 not_posted.append(o.order_id)
         return Response(
-            json.dumps({"posted_ids": posted, "not_posted": not_posted, "updated": updated}), status=201
+            json.dumps(
+                {"posted_ids": posted, "not_posted": not_posted, "updated": updated}
+            ),
+            status=201,
         )
 
     def __remove_deleted_recorded(self, id, recorded_ids):

@@ -9,7 +9,9 @@ class TunerAPI:
     def create_tuner(self, username, tuner_name):
         tuner_id = self.__create_user_tuner(tuner_name)
         if tuner_id:
-            if self.__associate_tuner_with(username, tuner_id, "owner"):
+            if self.__associate_tuner_with(
+                username, tuner_id, "owner"
+            ) and self.__add_tuner_related_information(tuner_id):
                 return Response(
                     json.dumps(f"Successfully created new tuner"), status=201
                 )
@@ -122,6 +124,23 @@ class TunerAPI:
         args = [username, tuner_id, role]
 
         return self.db_manager.run_query(query, args, return_id=True)
+
+    def __add_tuner_related_information(self, tuner_id):
+        query = """INSERT INTO settings (tuner_id, recording_location, tvh_username, tvh_password)
+            VALUES(?, "/recordings", "", "")
+            """
+        query2 = """INSERT INTO information_needed (tuner_id, changed_recording_order_list, changed_settings, need_recording_file_list, need_epg)
+            VALUES(?, 1, 1, 1, 1)
+            """
+        query3 = """INSERT INTO tuner_status (tuner_id, free_space, is_recording, current_recording_time, current_recording_size)
+            VALUES(?, 0, 0, 0, 0)"""
+        args = [tuner_id]
+
+        return (
+            self.db_manager.run_query(query, args, return_id=True)
+            and self.db_manager.run_query(query2, args, return_id=True)
+            and self.db_manager.run_query(query3, args, return_id=True)
+        )
 
     def __user_already_added(self, username, tuner_id):
         query = """SELECT user_id, tuner_id, role
