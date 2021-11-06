@@ -130,6 +130,7 @@ class OrdersAPI:
         result = self.db_manager.run_query(query, args)
         if result[0][0]:
             epg = JsonConverter.convert_any(result[0][0], EPG)
+            epg.genre = ",".join(str(g) for g in epg.genre) if epg.genre else "0"
             return epg
         else:
             return False

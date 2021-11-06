@@ -153,7 +153,7 @@ class EPG:
         self.subtitle = subtitle
         self.summary = summary
         self.description = description
-        self.genre = ",".join(str(g) for g in genre) if genre else "0"
+        self.genre = genre
         self.next_event_id = nextEventId
 
 
