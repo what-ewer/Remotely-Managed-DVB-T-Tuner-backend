@@ -18,6 +18,7 @@ class RecordedAPI:
             ri.subtitle,
             ri.summary,
             ri.description,
+            ri.genres,
             ri.record_size,
             ri.file_name
             FROM recorded_files as rf
