@@ -262,7 +262,7 @@ def information_provided():
     return execute_function(heartbeat_api.provide_information, ["id", "information"])
 
 
-# Favorites API
+# Favorites API # series: 0 - titles, 1 - episodes
 @app.route("/favorites", methods=["POST"])
 @auth.login_required
 def add_favorite():
