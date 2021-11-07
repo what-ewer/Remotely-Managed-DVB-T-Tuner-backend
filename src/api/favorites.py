@@ -1,5 +1,5 @@
 from flask import Response
-import json, requests
+import json
 
 
 class FavoritesAPI:
@@ -39,7 +39,7 @@ class FavoritesAPI:
         if result:
             return Response(json.dumps(result), status=200)
         else:
-            return Response("Something went wrong", status=500)
+            return Response("[]", status=200)
 
     def remove_favorite(self, username, name, series):
         try:

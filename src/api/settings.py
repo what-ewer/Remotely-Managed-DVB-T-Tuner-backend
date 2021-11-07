@@ -1,13 +1,12 @@
-from typing import Set
 from flask import Response
-import json, requests
-from src.api import heartbeat
+import json
 from src.database.db_model import Settings
 
 
 class SettingsAPI:
-    def __init__(self, db_manager):
+    def __init__(self, db_manager, heartbeat_api):
         self.db_manager = db_manager
+        self.heartbeat = heartbeat_api
 
     def get_settings(self, id):
         query = """SELECT recording_location, tvh_username, tvh_password 
@@ -37,12 +36,7 @@ class SettingsAPI:
         ]
 
         if self.db_manager.run_query(query, args, return_result=False):
-            # POST that we provided needed Settings information
-            requests.post(
-                url=f"{heartbeat.url}/ask",
-                params={"id": id, "information": "changed_settings"},
-                auth=(username, password),
-            )
+            self.heartbeat.provide_information(id, "changed_settings")
             return Response("Successfully updated Settings", status=201)
         else:
             return Response("Something went wrong", status=500)

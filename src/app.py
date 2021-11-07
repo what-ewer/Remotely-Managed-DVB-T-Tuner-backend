@@ -28,14 +28,14 @@ auth = HTTPBasicAuth()
 
 db_manager = DBManager()
 auth_manager = UserAuth(db_manager)
-orders_api = orders.OrdersAPI(db_manager)
+heartbeat_api = heartbeat.HeartbeatAPI(db_manager)
 channels_api = channels.ChannelsAPI(db_manager)
-epg_api = epg.EpgAPI(db_manager)
+orders_api = orders.OrdersAPI(db_manager, channels_api, heartbeat_api)
+settings_api = settings.SettingsAPI(db_manager, heartbeat_api)
+epg_api = epg.EpgAPI(db_manager, heartbeat_api)
 status_api = status.StatusAPI(db_manager)
 recorded_api = recorded.RecordedAPI(db_manager)
-settings_api = settings.SettingsAPI(db_manager)
 tuner_api = tuner.TunerAPI(db_manager)
-heartbeat_api = heartbeat.HeartbeatAPI(db_manager)
 favorites_api = favorites.FavoritesAPI(db_manager)
 
 

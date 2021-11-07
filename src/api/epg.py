@@ -1,12 +1,12 @@
 from flask import Response
-import json, requests
-from src.api import heartbeat
+import json
 from src.database.db_model import JsonConverter, EPG
 
 
 class EpgAPI:
-    def __init__(self, db_manager):
+    def __init__(self, db_manager, heartbeat_api):
         self.db_manager = db_manager
+        self.heartbeat = heartbeat_api
 
     def get_epg(self, id):
         query = """SELECT epg FROM tuners 
@@ -40,12 +40,7 @@ class EpgAPI:
         args = [id]
 
         if self.db_manager.run_query(query, args, return_result=False):
-            # POST that we provided needed EPG information
-            requests.post(
-                url=f"{heartbeat.url}/provide",
-                params={"id": id, "information": "need_epg"},
-                auth=(username, password),
-            )
+            self.heartbeat.provide_information(id, "need_epg")
             return Response("Successfully updated EPG", status=201)
         else:
             return Response("Something went wrong", status=500)

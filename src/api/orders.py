@@ -1,6 +1,5 @@
 from flask import Response
-import json, datetime, requests
-from src.api import heartbeat
+import json, datetime
 from src.database.db_model import (
     EPG,
     JsonConverter,
@@ -8,13 +7,13 @@ from src.database.db_model import (
     RecordInformation,
     RecordOrders,
 )
-from api.channels import ChannelsAPI
 
 
 class OrdersAPI:
-    def __init__(self, db_manager):
+    def __init__(self, db_manager, channel_api, heartbeat_api):
         self.db_manager = db_manager
-        self.channel_api = ChannelsAPI(db_manager)
+        self.heartbeat = heartbeat_api
+        self.channel_api = channel_api
 
     def get_orders(self, id):
         query = """SELECT ri.order_id,
@@ -62,12 +61,7 @@ class OrdersAPI:
             )
         (res, err_msg) = self.__check_overlapping(id, orders, channels)
         if res:
-            requests.post(
-                url=f"{heartbeat.url}/ask",
-                params={"id": id, "information": "changed_recording_order_list"},
-                auth=(username, password),
-            )
-
+            self.heartbeat.ask_for_information(id, "changed_recording_order_list")
             for o in orders:
                 order_info = self.__get_additional_information(id, o)
                 if order_info:

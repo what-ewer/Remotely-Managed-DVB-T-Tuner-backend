@@ -2,8 +2,6 @@ from flask import Response
 import json
 from src.database.db_model import InformationNeeded
 
-url = "http://127.0.0.1:5000/heartbeat"
-
 
 class HeartbeatAPI:
     def __init__(self, db_manager):
@@ -44,7 +42,7 @@ class HeartbeatAPI:
             return Response(
                 f"Something went wrong when asking for {information}", status=400
             )
-
+            
     def provide_information(self, tuner_id, information):
         possible_information = [
             "changed_recording_order_list",
