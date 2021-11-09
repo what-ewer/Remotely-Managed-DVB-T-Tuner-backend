@@ -1,18 +1,27 @@
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+import sys
 
 
 class DBManager:
-    def __init__(self, username, password, host):
-        self.conn = self.connect(username, password, host)
+    def __init__(self, conf_params):
+        try:
+            username = conf_params["user"]
+            password = conf_params["password"]
+            host = conf_params["host"]
+            database = conf_params["database"]
+        except Exception as exc:
+            print(f"Couldnt get params for db connection {exc}")
+            sys.exit()
+        self.conn = self.connect(username, password, host, database)
 
-    def connect(self, username, password, host):
+    def connect(self, username, password, host, db):
         try:
             conn = psycopg2.connect(
                 user=username,
                 host=host,
                 password=password,
-                database="rmdvbt",
+                database=db,
             )
         except psycopg2.OperationalError:
             conn = psycopg2.connect(
@@ -24,9 +33,10 @@ class DBManager:
 
             cursor = conn.cursor()
             create_db_query = """
-                CREATE DATABASE rmdvbt
+                CREATE DATABASE %s
             """
-            cursor.execute(create_db_query)
+            args = [db]
+            cursor.execute(create_db_query, args)
             return conn
 
         return conn
@@ -87,7 +97,7 @@ class DBManager:
 
         if get_inserted_id:
             res = cur.fetchall()[0][0]
-        elif return_result:        
+        elif return_result:
             try:
                 res = cur.fetchall()
             except:
