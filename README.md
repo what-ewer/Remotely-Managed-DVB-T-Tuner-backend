@@ -6,7 +6,8 @@
 |─ documentation/
 |─ misc/
 |─ src/
-  |─ api/                 
+  |─ api/       
+    |─ api_executor.py      
     |─ channels.py
     |─ epg.py
     |─ favorites.py
@@ -21,9 +22,12 @@
   |─ database/
     |─ create/
     |─ utility/
+    |─ database.ini
     |─ db_manager.py
     |─ db_model.py
-  |─ app.py
+  |─ misc/
+    |─ config_parser.py
+|─ app.py
 ```
 
 ## Local development
