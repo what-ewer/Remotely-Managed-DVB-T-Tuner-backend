@@ -10,7 +10,7 @@ class TunerAPI:
         tuner_id = self.__create_user_tuner(tuner_name)
         if tuner_id:
             if self.__associate_tuner_with(
-                username, tuner_id, 'owner'
+                username, tuner_id, "owner"
             ) and self.__add_tuner_related_information(tuner_id):
                 return Response(
                     json.dumps(f"Successfully created new tuner"), status=201
@@ -36,14 +36,12 @@ class TunerAPI:
         if res and len(res) == 1:
             [(uid, tid, role)] = res
             if role == "invited":
-                if self.__answer_invite(uid, tid, 'user'):
+                if self.__answer_invite(uid, tid, "user"):
                     return Response(
                         json.dumps(f"Successfully accepted invite to tuner"), status=200
                     )
                 else:
-                    return Response(
-                        json.dumps(f"Failed to accept invite"), status=500
-                    )
+                    return Response(json.dumps(f"Failed to accept invite"), status=500)
             else:
                 return Response(
                     json.dumps(
@@ -58,14 +56,12 @@ class TunerAPI:
         if res and len(res) == 1:
             [(uid, tid, role)] = res
             if role == "invited":
-                if self.__answer_invite(uid, tid, 'declined'):
+                if self.__answer_invite(uid, tid, "declined"):
                     return Response(
                         json.dumps(f"Successfully declined invite to tuner"), status=200
                     )
                 else:
-                    return Response(
-                        json.dumps(f"Failed to decline invite"), status=500
-                    )
+                    return Response(json.dumps(f"Failed to decline invite"), status=500)
             else:
                 return Response(
                     json.dumps(
@@ -225,7 +221,7 @@ class TunerAPI:
         return self.db_manager.run_query(query, args, return_result=False)
 
     def __get_tuners_of_user(self, username):
-        query =f"""SELECT user_tuners.tuner_id, tuners.tuner_name, user_tuners.role
+        query = f"""SELECT user_tuners.tuner_id, tuners.tuner_name, user_tuners.role
             FROM user_tuners
             INNER JOIN tuners
             ON tuners.id = user_tuners.tuner_id
