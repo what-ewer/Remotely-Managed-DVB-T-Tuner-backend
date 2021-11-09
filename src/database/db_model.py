@@ -76,7 +76,7 @@ class RecordedFiles:
         channel_id,
         record_size,
         start,
-        end,
+        stop,
         **kwargs
     ):
         self.order_id = order_id
@@ -85,7 +85,7 @@ class RecordedFiles:
         self.channel_id = channel_id
         self.record_size = record_size
         self.start = start
-        self.end = end
+        self.stop = stop
 
 
 class InformationNeeded:
@@ -104,18 +104,18 @@ class InformationNeeded:
 
 
 class Orders:
-    def __init__(self, channel_id, start, end, **kwargs):
+    def __init__(self, channel_id, start, stop, **kwargs):
         self.channel_id = channel_id
         self.start = start
-        self.end = end
+        self.stop = stop
 
 
 class RecordOrders:
-    def __init__(self, id, channel_id, start, end, **kwargs):
+    def __init__(self, id, channel_id, start, stop, **kwargs):
         self.id = id
         self.channel_id = channel_id
         self.start = start
-        self.end = end
+        self.stop = stop
 
 
 class User:
