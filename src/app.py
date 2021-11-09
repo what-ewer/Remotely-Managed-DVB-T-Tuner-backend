@@ -26,7 +26,7 @@ from src.auth.auth import UserAuth
 app = Flask(__name__)
 auth = HTTPBasicAuth()
 
-db_manager = DBManager()
+db_manager = DBManager("postgres", "12345", "localhost")
 auth_manager = UserAuth(db_manager)
 heartbeat_api = heartbeat.HeartbeatAPI(db_manager)
 channels_api = channels.ChannelsAPI(db_manager)
@@ -192,7 +192,7 @@ def get_channels():
 @auth.login_required
 def post_epg():
     return execute_function(
-        epg_api.post_epg, ["id", "username", "password"], EPG, False
+        epg_api.post_epg, ["id"], EPG, False
     )
 
 
@@ -220,7 +220,7 @@ def get_status():
 @auth.login_required
 def post_settings():
     return execute_function(
-        settings_api.post_settings, ["id", "username", "password"], Settings
+        settings_api.post_settings, ["id"], Settings
     )
 
 
