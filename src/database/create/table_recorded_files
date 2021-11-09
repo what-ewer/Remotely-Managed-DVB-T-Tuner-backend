@@ -5,10 +5,10 @@ CREATE TABLE IF NOT EXISTS recorded_files (
     program_name varchar(255) NOT NULL,
     record_size integer NOT NULL,
     start bigint NOT NULL,
-    end bigint NOT NULL,
-    CONSTRAINT record_files_pk PRIMARY KEY (order_id),
-    CONSTRAINT recorded_tuners FOREIGN KEY (tuner_id)
-    REFERENCES tuners (id)
-    CONSTRAINT record_information FOREIGN KEY (order_id)
-    REFERENCES tuners (order_id)
+    stop bigint NOT NULL,
+    PRIMARY KEY (order_id),
+    FOREIGN KEY (tuner_id)
+        REFERENCES tuners (id),
+    FOREIGN KEY (order_id)
+        REFERENCES record_information (order_id)
 );

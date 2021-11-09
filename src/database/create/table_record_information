@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS record_information (
     genres varchar(255),
     record_size int,
     file_name varchar(255),
-    CONSTRAINT record_info_pk PRIMARY KEY (order_id),
-    CONSTRAINT record_info_fk FOREIGN KEY (order_id)
-    REFERENCES record_orders (id)
+    PRIMARY KEY (order_id),
+    FOREIGN KEY (order_id)
+        REFERENCES record_orders (id)
 );
