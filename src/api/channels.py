@@ -9,7 +9,7 @@ class ChannelsAPI:
 
     def get_channels(self, id):
         query = """SELECT channels FROM tuners
-            WHERE id = ?"""
+            WHERE id = %s"""
         args = [id]
 
         result = self.db_manager.run_query(query, args)
@@ -35,7 +35,7 @@ class ChannelsAPI:
     def post_channels(self, id, channels):
         query = f"""UPDATE tuners
             SET channels = '{json.dumps(channels)}'
-            WHERE id = ?"""
+            WHERE id = %s"""
         args = [id]
 
         if self.db_manager.run_query(query, args, return_result=False):

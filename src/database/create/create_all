@@ -1,0 +1,112 @@
+CREATE TABLE IF NOT EXISTS users (
+    id serial NOT NULL,
+    login varchar(255) NOT NULL,
+    password varchar(255)   NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS tuners (
+    id serial NOT NULL,
+    tuner_name varchar(255),
+    epg text,
+    channels text,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS user_tuners (
+    user_id integer NOT NULL,
+    tuner_id integer NOT NULL,
+    role varchar(255),
+    PRIMARY KEY (tuner_id,user_id),
+    FOREIGN KEY (user_id)
+        REFERENCES users (id),
+    FOREIGN KEY (tuner_id)
+        REFERENCES tuners (id)
+);
+
+CREATE TABLE IF NOT EXISTS tuner_status (
+    tuner_id integer NOT NULL,
+    free_space integer NOT NULL,
+    is_recording boolean NOT NULL,
+    current_recording_time integer NOT NULL,
+    current_recording_size integer NOT NULL,
+    PRIMARY KEY (tuner_id),
+    FOREIGN KEY (tuner_id)
+        REFERENCES tuners (id)
+);
+
+CREATE TABLE IF NOT EXISTS settings (
+    tuner_id integer NOT NULL,
+    recording_location varchar(255),
+    tvh_username varchar(255),
+    tvh_password varchar(255), 
+    PRIMARY KEY (tuner_id),
+    FOREIGN KEY (tuner_id)
+        REFERENCES tuners (id)
+);
+
+CREATE TABLE IF NOT EXISTS record_orders (
+    id serial NOT NULL,
+    tuner_id integer NOT NULL,
+    channel_id varchar(255) NOT NULL,
+    start bigint NOT NULL,
+    stop bigint NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (tuner_id)
+        REFERENCES tuners (id)
+);
+
+CREATE TABLE IF NOT EXISTS information_needed (
+    tuner_id integer NOT NULL,
+    changed_recording_order_list boolean NOT NULL,
+    changed_settings boolean NOT NULL,
+    need_recording_file_list boolean NOT NULL,
+    need_epg boolean NOT NULL,
+    PRIMARY KEY (tuner_id),
+    FOREIGN KEY (tuner_id)
+        REFERENCES tuners (id)
+);
+
+CREATE TABLE IF NOT EXISTS record_information (
+    order_id integer NOT NULL,
+    channel_name varchar(255),
+    channel_id varchar(255),
+    channel_number int,
+    start bigint,
+    stop bigint,
+    title varchar(255),
+    subtitle varchar(255),
+    summary varchar(255),
+    description varchar(255),
+    genres varchar(255),
+    record_size int,
+    file_name varchar(255),
+    PRIMARY KEY (order_id),
+    FOREIGN KEY (order_id)
+        REFERENCES record_orders (id)
+);
+
+CREATE TABLE IF NOT EXISTS recorded_files (
+    order_id integer NOT NULL,
+    tuner_id integer NOT NULL,
+    channel_id varchar(255) NOT NULL,
+    program_name varchar(255) NOT NULL,
+    record_size integer NOT NULL,
+    start bigint NOT NULL,
+    stop bigint NOT NULL,
+    PRIMARY KEY (order_id),
+    FOREIGN KEY (tuner_id)
+        REFERENCES tuners (id),
+    FOREIGN KEY (order_id)
+        REFERENCES record_information (order_id)
+);
+
+CREATE TABLE IF NOT EXISTS favorites (
+    id serial NOT NULL,
+    user_id integer NOT NULL,
+    favorite varchar(255),
+    series boolean NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id)
+        REFERENCES users (id)
+);

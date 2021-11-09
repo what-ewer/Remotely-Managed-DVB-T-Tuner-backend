@@ -10,7 +10,7 @@ class EpgAPI:
 
     def get_epg(self, id):
         query = """SELECT epg FROM tuners 
-            WHERE id = ?"""
+            WHERE id = %s"""
         args = [id]
 
         result = self.db_manager.run_query(query, args)
@@ -32,11 +32,11 @@ class EpgAPI:
         else:
             return Response("Something went wrong", status=500)
 
-    def post_epg(self, id, username, password, epg):
+    def post_epg(self, id, epg):
         epg_dumped = json.dumps(epg).replace("'", "''")
         query = f"""UPDATE tuners
             SET epg = '{epg_dumped}'
-            WHERE id = ?"""
+            WHERE id = %s"""
         args = [id]
 
         if self.db_manager.run_query(query, args, return_result=False):

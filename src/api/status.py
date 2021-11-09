@@ -8,12 +8,16 @@ class StatusAPI:
         self.db_manager = db_manager
 
     def post_status(self, id, status):
-        query = """INSERT OR REPLACE INTO tuner_status(tuner_id, free_space, is_recording, current_recording_time, current_recording_size)
-            VALUES(?, ?, ?, ?, ?)"""
+        query = """INSERT INTO tuner_status(tuner_id, free_space, is_recording, current_recording_time, current_recording_size)
+            VALUES(%s, %s, %s, %s, %s)
+            ON CONFLICT(tuner_id)
+            DO
+                UPDATE SET (free_space, is_recording, current_recording_time, current_recording_size)
+                = (EXCLUDED.free_space, EXCLUDED.is_recording, EXCLUDED.current_recording_time, EXCLUDED.current_recording_size)"""
         args = [
             id,
             status.free_space,
-            status.is_recording,
+            bool(status.is_recording),
             status.current_recording_time,
             status.current_recording_size,
         ]
@@ -26,7 +30,7 @@ class StatusAPI:
     def get_status(self, id):
         query = """SELECT free_space, is_recording, current_recording_size, current_recording_time 
             FROM tuner_status
-            WHERE tuner_id = ?"""
+            WHERE tuner_id = %s"""
         args = [id]
 
         result = self.db_manager.run_query(query, args)

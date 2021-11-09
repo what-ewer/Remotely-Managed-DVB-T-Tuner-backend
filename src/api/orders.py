@@ -32,7 +32,7 @@ class OrdersAPI:
             FROM record_orders AS ro
             INNER JOIN record_information as ri
             ON ro.id = ri.order_id
-            WHERE tuner_id = ?"""
+            WHERE tuner_id = %s"""
         args = [id]
 
         result = self.db_manager.run_query(query, args)
@@ -88,19 +88,29 @@ class OrdersAPI:
 
     def post_order(self, id, order, checked=False):
         if checked or self.__check_overlapping(id, order):
-            query = """INSERT INTO record_orders(tuner_id, channel_id, start, end)
-                VALUES(?, ?, ?, ?)"""
-            args = [id, order.channel_id, order.start, order.end]
+            query = """INSERT INTO record_orders(id, tuner_id, channel_id, start, stop)
+                VALUES(DEFAULT, %s, %s, %s, %s)
+                RETURNING id;"""
+            args = [id, order.channel_id, order.start, order.stop]
             return self.db_manager.run_query(query, args, return_id=True)
         return 0
 
     def delete_orders(self, tuner_id, order_id):
         if not self.__order_exists(order_id):
             return Response("Order does not exist", status=406)
+        
+        if self.__is_recorded_already(tuner_id, order_id):
+            return Response("The order is already recorded!", status=400)
 
-        query = """DELETE FROM record_orders 
-            WHERE tuner_id = ? AND id = ?"""
-        args = [tuner_id, order_id]
+        if self.__started_recording(tuner_id):
+            return Response("The tuner already started recording order!", status=400)
+
+        query = """DELETE FROM record_information
+            WHERE order_id = %s;        
+            DELETE FROM record_orders 
+            WHERE tuner_id = %s AND id = %s
+            RETURNING id"""
+        args = [order_id, tuner_id, order_id]
 
         if self.db_manager.run_query(query, args, return_result=False):
             return Response("Successfully deleted order", status=200)
@@ -115,7 +125,7 @@ class OrdersAPI:
                     lambda p: (
                         p.channel_uuid == order.channel_id
                         and p.start == order.start
-                        and p.stop == order.end
+                        and p.stop == order.stop
                     ),
                     epg,
                 )
@@ -126,7 +136,7 @@ class OrdersAPI:
     def __get_epg(self, id):
         query = """SELECT epg 
             FROM tuners
-            WHERE id = ?"""
+            WHERE id = %s"""
         args = [id]
 
         result = self.db_manager.run_query(query, args)
@@ -139,7 +149,8 @@ class OrdersAPI:
     def __post_additional_information(self, order_id, info):
         query = """INSERT INTO record_information(order_id, channel_name, channel_id, channel_number, start,
             stop, title, subtitle, summary, description, genres, record_size, file_name)
-            VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL)"""
+            VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 0, NULL)
+            RETURNING order_id;"""
         args = [
             order_id,
             info.channel_name,
@@ -160,7 +171,7 @@ class OrdersAPI:
     def __order_exists(self, order_id):
         query = """SELECT id 
             FROM record_orders
-            WHERE id = ?"""
+            WHERE id = %s"""
         args = [order_id]
 
         return self.db_manager.run_query(query, args)
@@ -176,8 +187,8 @@ class OrdersAPI:
             muxes.add(mux_id)
             multiplexes[ch_id] = mux_id
 
-        all_dates = [(o.start, o.end, o.channel_id) for o in orders]
-        all_dates.extend([(o.start, o.end, o.channel_id) for o in new_orders])
+        all_dates = [(o.start, o.stop, o.channel_id) for o in orders]
+        all_dates.extend([(o.start, o.stop, o.channel_id) for o in new_orders])
         mux_dates = {mux_id: [] for mux_id in muxes}
         for d in all_dates:
             if d[2] not in multiplexes.keys():
@@ -195,7 +206,7 @@ class OrdersAPI:
     def __get_channels(self, id):
         query = """SELECT channels 
             FROM tuners
-            WHERE id = ?"""
+            WHERE id = %s"""
         args = [id]
 
         result = self.db_manager.run_query(query, args)
@@ -205,17 +216,42 @@ class OrdersAPI:
         return ""
 
     def __get_orders(self, id):
-        query = """SELECT id, channel_id, start, end 
+        query = """SELECT id, channel_id, start, stop 
             FROM record_orders
-            WHERE tuner_id = ?"""
+            WHERE tuner_id = %s"""
         args = [id]
 
         result = self.db_manager.run_query(query, args)
         if result:
             ts = datetime.datetime.now().timestamp()
             orders = list(
-                filter(lambda o: o.end > ts, [RecordOrders(*o) for o in result])
+                filter(lambda o: o.stop > ts, [RecordOrders(*o) for o in result])
             )
             return orders
         else:
             return []
+
+    def __is_recorded_already(self, order_id, tuner_id):
+        query = """SELECT order_id
+            FROM recorded_files
+            WHERE order_id = %s AND tuner_id = %s"""
+        args = [order_id, tuner_id]
+
+        result = self.db_manager.run_query(query, args, return_result=True)
+        return result
+
+    def __started_recording(self, order_id):
+        query = """SELECT start, stop
+            FROM record_orders
+            WHERE id = %s"""
+        args = [order_id]
+
+        result = self.db_manager.run_query(query, args)
+        if result:
+            (start, stop) = result[0]
+            ts = datetime.datetime.now().timestamp()
+            if ts < start:
+                return True
+            else:
+                return False            
+        return True

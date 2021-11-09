@@ -7,18 +7,13 @@ class FavoritesAPI:
         self.db_manager = db_manager
 
     def add_favorite(self, username, name, series):
-        try:
-            series = bool(int(series))
-        except:
-            series = 0
-
         user_id = self.__get_user_id(username)
         if user_id:
             if self.__already_favorited(user_id, name, series):
                 return Response("Favorite already added", status=400)
             query = """INSERT INTO favorites (user_id, favorite, series)
-                VALUES(?, ?, ?)"""
-            args = [user_id, name, bool(int(series))]
+                VALUES(%s, %s, %s)"""
+            args = [user_id, name, series]
 
             if self.db_manager.run_query(query, args, return_result=False):
                 return Response("Successfully added favorite to user", status=201)
@@ -32,7 +27,7 @@ class FavoritesAPI:
             FROM favorites
             INNER JOIN users
             ON users.id = favorites.user_id
-            WHERE users.login = ?"""
+            WHERE users.login = %s"""
         args = [username]
 
         result = self.db_manager.run_query(query, args)
@@ -42,18 +37,14 @@ class FavoritesAPI:
             return Response("[]", status=200)
 
     def remove_favorite(self, username, name, series):
-        try:
-            series = bool(int(series))
-        except:
-            series = 0
-
         user_id = self.__get_user_id(username)
         if user_id:
             if not self.__already_favorited(user_id, name, series):
                 return Response("Favorite does not exist", status=500)
 
             query = """DELETE FROM favorites
-                WHERE user_id = ? AND favorite = ? AND series = ?"""
+                WHERE user_id = %s AND favorite = %s AND series = %s
+                RETURNING id;"""
             args = [user_id, name, series]
             result = self.db_manager.run_query(query, args, return_result=False)
             if result:
@@ -66,7 +57,7 @@ class FavoritesAPI:
     def __get_user_id(self, username):
         query = """SELECT id
             FROM users
-            WHERE login = ?"""
+            WHERE login = %s"""
         args = [username]
 
         result = self.db_manager.run_query(query, args)
@@ -75,7 +66,7 @@ class FavoritesAPI:
     def __already_favorited(self, user_id, name, series):
         query = """SELECT *
             FROM favorites
-            WHERE user_id = ? AND favorite = ? AND series = ?"""
+            WHERE user_id = %s AND favorite = %s AND series = %s"""
         args = [user_id, name, series]
 
         result = self.db_manager.run_query(query, args)
