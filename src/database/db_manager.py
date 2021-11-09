@@ -32,11 +32,10 @@ class DBManager:
             conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
 
             cursor = conn.cursor()
-            create_db_query = """
-                CREATE DATABASE %s
+            create_db_query = f"""
+                CREATE DATABASE {db}
             """
-            args = [db]
-            cursor.execute(create_db_query, args)
+            cursor.execute(create_db_query)
             return conn
 
         return conn
