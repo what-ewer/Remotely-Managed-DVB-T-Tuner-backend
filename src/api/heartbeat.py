@@ -42,7 +42,7 @@ class HeartbeatAPI:
             return Response(
                 f"Something went wrong when asking for {information}", status=400
             )
-            
+
     def provide_information(self, tuner_id, information):
         possible_information = [
             "changed_recording_order_list",

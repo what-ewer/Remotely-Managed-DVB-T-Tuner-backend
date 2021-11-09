@@ -98,7 +98,7 @@ class OrdersAPI:
     def delete_orders(self, tuner_id, order_id):
         if not self.__order_exists(order_id):
             return Response("Order does not exist", status=406)
-        
+
         if self.__is_recorded_already(tuner_id, order_id):
             return Response("The order is already recorded!", status=400)
 
@@ -253,5 +253,5 @@ class OrdersAPI:
             if ts < start:
                 return True
             else:
-                return False            
+                return False
         return True
