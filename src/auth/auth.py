@@ -46,16 +46,16 @@ class UserAuth:
     def __verify_user(self, username, password):
         query = """SELECT id, login, password 
             FROM users
-            WHERE login = ? AND password = ?"""
+            WHERE login = %s AND password = %s"""
         args = [username, password]
 
         result = self.db_manager.run_query(query, args)
         return (result[0][0], True) if result else (-1, False)
 
     def __verify_id(self, id, user_id):
-        query = f"""SELECT user_id, tuner_id
+        query = """SELECT user_id, tuner_id
             FROM user_tuners
-            WHERE user_id = ? AND tuner_id = ?"""
+            WHERE user_id = %s AND tuner_id = %s"""
         args = [user_id, id]
 
         result = self.db_manager.run_query(query, args)
@@ -64,7 +64,7 @@ class UserAuth:
     def __get_user_id(self, user, password):
         query = """SELECT id 
             FROM users
-            WHERE login = ? AND password = ?"""
+            WHERE login = %s AND password = %s"""
         args = [user, password]
 
         result = self.db_manager.run_query(query, args)
@@ -73,7 +73,7 @@ class UserAuth:
     def __get_user_tuners(self, id):
         query = """SELECT tuner_id 
             FROM user_tuners
-            WHERE user_id = ?"""
+            WHERE user_id = %s"""
         args = [id]
 
         result = self.db_manager.run_query(query, args)
@@ -82,14 +82,15 @@ class UserAuth:
     def __user_already_exists(self, username):
         query = """SELECT id 
             FROM users
-            WHERE login = ?"""
+            WHERE login = %s"""
         args = [username]
 
         return self.db_manager.run_query(query, args)
 
     def __register_user(self, username, password):
-        query = f"""INSERT INTO users (login, password)
-                VALUES (?, ?)"""
+        query = """INSERT INTO users (id, login, password)
+                VALUES (DEFAULT, %s, %s)
+            RETURNING id;"""
         args = [username, password]
 
         return self.db_manager.run_query(query, args, return_result=False)
