@@ -11,7 +11,7 @@ class HeartbeatAPI:
         query = """SELECT changed_recording_order_list, changed_settings,
             need_recording_file_list, need_epg
             FROM information_needed
-            WHERE tuner_id = ?"""
+            WHERE tuner_id = %s"""
         args = [tuner_id]
 
         result = self.db_manager.run_query(query, args)
@@ -36,7 +36,7 @@ class HeartbeatAPI:
             return Response(
                 f"You can only ask for {json.dumps(possible_information)}", status=400
             )
-        if self.__change_information(tuner_id, information, 1):
+        if self.__change_information(tuner_id, information, True):
             return Response(f"Successfully asked for {information}", status=200)
         else:
             return Response(
@@ -55,7 +55,7 @@ class HeartbeatAPI:
                 f"You can only provide information for {json.dumps(possible_information)}",
                 status=400,
             )
-        if self.__change_information(tuner_id, information, 0):
+        if self.__change_information(tuner_id, information, False):
             return Response(f"Successfully provided for {information}", status=200)
         else:
             return Response(
@@ -64,8 +64,8 @@ class HeartbeatAPI:
 
     def __change_information(self, tuner_id, information, val):
         query = f"""UPDATE information_needed
-            SET {information} = ?
-            WHERE tuner_id = ?
+            SET {information} = %s
+            WHERE tuner_id = %s
             """
         args = [val, tuner_id]
 

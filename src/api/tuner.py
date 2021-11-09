@@ -10,7 +10,7 @@ class TunerAPI:
         tuner_id = self.__create_user_tuner(tuner_name)
         if tuner_id:
             if self.__associate_tuner_with(
-                username, tuner_id, "owner"
+                username, tuner_id, 'owner'
             ) and self.__add_tuner_related_information(tuner_id):
                 return Response(
                     json.dumps(f"Successfully created new tuner"), status=201
@@ -36,11 +36,13 @@ class TunerAPI:
         if res and len(res) == 1:
             [(uid, tid, role)] = res
             if role == "invited":
-                if self.__answer_invite(uid, tid, "user"):
-                    return
-                else:
+                if self.__answer_invite(uid, tid, 'user'):
                     return Response(
                         json.dumps(f"Successfully accepted invite to tuner"), status=200
+                    )
+                else:
+                    return Response(
+                        json.dumps(f"Failed to accept invite"), status=500
                     )
             else:
                 return Response(
@@ -56,11 +58,13 @@ class TunerAPI:
         if res and len(res) == 1:
             [(uid, tid, role)] = res
             if role == "invited":
-                if self.__answer_invite(uid, tid, "declined"):
-                    return
-                else:
+                if self.__answer_invite(uid, tid, 'declined'):
                     return Response(
                         json.dumps(f"Successfully declined invite to tuner"), status=200
+                    )
+                else:
+                    return Response(
+                        json.dumps(f"Failed to decline invite"), status=500
                     )
             else:
                 return Response(
@@ -109,8 +113,9 @@ class TunerAPI:
             )
 
     def __create_user_tuner(self, tuner_name):
-        query = """INSERT INTO tuners (tuner_name)
-                VALUES (?)"""
+        query = """INSERT INTO tuners (id, tuner_name)
+                VALUES (DEFAULT, %s)
+                RETURNING id;"""
         args = [tuner_name]
 
         return self.db_manager.run_query(query, args, return_id=True)
@@ -119,7 +124,8 @@ class TunerAPI:
         query = """INSERT INTO user_tuners (user_id, tuner_id, role)
             VALUES ((SELECT id
             FROM users
-            WHERE login = ?), ?, ?)
+            WHERE login = %s), %s, %s)
+            RETURNING tuner_id;
             """
         args = [username, tuner_id, role]
 
@@ -127,13 +133,16 @@ class TunerAPI:
 
     def __add_tuner_related_information(self, tuner_id):
         query = """INSERT INTO settings (tuner_id, recording_location, tvh_username, tvh_password)
-            VALUES(?, "/recordings", "", "")
+            VALUES(%s, '/recordings', '', '')
+            RETURNING tuner_id;
             """
         query2 = """INSERT INTO information_needed (tuner_id, changed_recording_order_list, changed_settings, need_recording_file_list, need_epg)
-            VALUES(?, 1, 1, 1, 1)
+            VALUES(%s, True, True, True, True)
+            RETURNING tuner_id;
             """
         query3 = """INSERT INTO tuner_status (tuner_id, free_space, is_recording, current_recording_time, current_recording_size)
-            VALUES(?, 0, 0, 0, 0)"""
+            VALUES(%s, 0, False, 0, 0)
+            RETURNING tuner_id;"""
         args = [tuner_id]
 
         return (
@@ -148,9 +157,9 @@ class TunerAPI:
             WHERE user_id = (
                 SELECT id 
                 FROM users
-                WHERE login = ?
+                WHERE login = %s
             ) AND
-            tuner_id = ?"""
+            tuner_id = %s"""
         args = [username, tuner_id]
 
         return self.db_manager.run_query(query, args)
@@ -159,7 +168,8 @@ class TunerAPI:
         query = """INSERT INTO user_tuners (user_id, tuner_id, role)
                 VALUES ((SELECT id
                 FROM users
-                WHERE login = ?), ?, 'invited')
+                WHERE login = %s), %s, 'invited')
+            RETURNING user_id, tuner_id;
                 """
         args = [username, tuner_id]
 
@@ -167,8 +177,9 @@ class TunerAPI:
 
     def __answer_invite(self, user_id, tuner_id, status):
         query = """UPDATE user_tuners
-            SET role = ?
-            WHERE user_id = ? AND tuner_id = ?
+            SET role = %s
+            WHERE user_id = %s AND tuner_id = %s
+            RETURNING role;
             """
         args = [status, user_id, tuner_id]
 
@@ -180,9 +191,9 @@ class TunerAPI:
             WHERE user_id = (
                 SELECT id 
                 FROM users
-                WHERE login = ?
+                WHERE login = %s
             ) AND
-            tuner_id = ?
+            tuner_id = %s
             AND role = 'owner'"""
         args = [username, tuner_id]
 
@@ -194,34 +205,34 @@ class TunerAPI:
             WHERE user_id = (
                 SELECT id 
                 FROM users
-                WHERE login = ?
+                WHERE login = %s
             ) AND
-            tuner_id = ?"""
+            tuner_id = %s"""
         args = [username, tuner_id]
 
         return self.db_manager.run_query(query, args)
 
     def __remove_user_from_tuner(self, username, tuner_id):
-        query = f"""DELETE FROM user_tuners
+        query = """DELETE FROM user_tuners
             WHERE user_id = (
                 SELECT id 
                 FROM users
-                WHERE login = ?
+                WHERE login = %s
             ) AND
-            tuner_id = ?"""
+            tuner_id = %s"""
         args = [username, tuner_id]
 
         return self.db_manager.run_query(query, args, return_result=False)
 
     def __get_tuners_of_user(self, username):
-        query = f"""SELECT user_tuners.tuner_id, tuners.tuner_name, user_tuners.role
+        query =f"""SELECT user_tuners.tuner_id, tuners.tuner_name, user_tuners.role
             FROM user_tuners
             INNER JOIN tuners
             ON tuners.id = user_tuners.tuner_id
             WHERE user_tuners.user_id = (
                 SELECT id 
                 FROM users
-                WHERE login = ?
+                WHERE login = %s
             )"""
         args = [username]
 
@@ -232,7 +243,7 @@ class TunerAPI:
             FROM user_tuners
             INNER JOIN users
             ON users.id = user_tuners.user_id
-            WHERE user_tuners.tuner_id = ?"""
+            WHERE user_tuners.tuner_id = %s"""
         args = [tuner_id]
 
         return self.db_manager.run_query(query, args)
