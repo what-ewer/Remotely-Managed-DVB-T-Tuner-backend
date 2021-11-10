@@ -1,6 +1,7 @@
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import sys
+import settings
 
 
 class DBManager:
@@ -17,12 +18,15 @@ class DBManager:
 
     def connect(self, username, password, host, db):
         try:
-            conn = psycopg2.connect(
-                user=username,
-                host=host,
-                password=password,
-                database=db,
-            )
+            if settings.DATABASE_URL != None:
+                conn = psycopg2.connect(DATABASE_URL)
+            else:
+                conn = psycopg2.connect(
+                    user=username,
+                    host=host,
+                    password=password,
+                    database=db,
+                )
         except psycopg2.OperationalError:
             conn = psycopg2.connect(
                 user=username,
