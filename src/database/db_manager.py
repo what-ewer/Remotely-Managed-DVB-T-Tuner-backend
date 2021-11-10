@@ -19,7 +19,7 @@ class DBManager:
     def connect(self, username, password, host, db):
         try:
             if settings.DATABASE_URL != None:
-                conn = psycopg2.connect(DATABASE_URL)
+                conn = psycopg2.connect(settings.DATABASE_URL)
             else:
                 conn = psycopg2.connect(
                     user=username,
