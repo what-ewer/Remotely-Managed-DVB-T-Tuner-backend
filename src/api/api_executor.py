@@ -3,7 +3,7 @@ from flask import request, Response
 
 class APIExecutor:
     def __init__(self, json_converter):
-        self.json_converted = json_converter
+        self.json_converter = json_converter
 
     def execute_function(self, function, args=None, data_class=None, convert=True):
         res_args = self.__check_args(args)

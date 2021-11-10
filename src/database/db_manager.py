@@ -14,6 +14,7 @@ class DBManager:
             print(f"Couldnt get params for db connection {exc}")
             sys.exit()
         self.conn = self.connect(username, password, host, database)
+        self.__setup_tables()
 
     def connect(self, username, password, host, db):
         try:
@@ -23,7 +24,7 @@ class DBManager:
                 password=password,
                 database=db,
             )
-        except psycopg2.OperationalError:
+        except:
             conn = psycopg2.connect(
                 user=username,
                 host=host,
@@ -40,33 +41,33 @@ class DBManager:
 
         return conn
 
-    def _drop_database(self):
+    def __drop_database(self):
         file = open("src/database/utility/drop_all", mode="r")
         drop_query = file.readlines()
         file.close()
-        self.execute_multiple_queries(drop_query)
+        self.__execute_multiple_queries(drop_query)
 
-    def _setup_tables(self):
+    def __setup_tables(self):
         filename = "src/database/create/create_all"
         file = open(filename, mode="r")
         query = file.read()
         file.close()
-        self.execute_query(query)
+        self.__execute_query(query)
 
-    def _generate_data(self):
+    def __generate_data(self):
         file = open("src/database/utility/example_data", mode="r")
         create_query = file.readlines()
-        self.execute_multiple_queries(create_query)
+        self.__execute_multiple_queries(create_query)
         file.close()
 
     def generate_db_with_data(self):
-        self._drop_database()
-        self._setup_tables()
-        self._generate_data()
+        self.__drop_database()
+        self.__setup_tables()
+        self.__generate_data()
 
     def generate_db_without_data(self):
-        self._drop_database()
-        self._setup_tables()
+        self.__drop_database()
+        self.__setup_tables()
 
     def run_query(
         self,
@@ -79,7 +80,7 @@ class DBManager:
         print_error=True,
     ):
         try:
-            query_result = self.execute_query(
+            query_result = self.__execute_query(
                 query, get_inserted_id=return_id, return_result=return_result, args=args
             )
         except Exception as exc:
@@ -89,7 +90,7 @@ class DBManager:
             return return_on_error
         return query_result if return_result else return_on_success
 
-    def execute_query(self, query, get_inserted_id=False, return_result=True, args=()):
+    def __execute_query(self, query, get_inserted_id=False, return_result=True, args=()):
         cur = self.conn.cursor()
         cur.execute(query, args)
         res = ""
@@ -106,6 +107,6 @@ class DBManager:
         cur.close()
         return res
 
-    def execute_multiple_queries(self, queries):
+    def __execute_multiple_queries(self, queries):
         res = [self.execute_query(query) for query in queries]
         return res
