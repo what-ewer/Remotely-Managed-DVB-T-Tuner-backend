@@ -108,5 +108,5 @@ class DBManager:
         return res
 
     def __execute_multiple_queries(self, queries):
-        res = [self.execute_query(query) for query in queries]
+        res = [self.__execute_query(query) for query in queries]
         return res
