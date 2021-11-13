@@ -102,9 +102,6 @@ class OrdersAPI:
         if self.__is_recorded_already(tuner_id, order_id):
             return Response("The order is already recorded!", status=400)
 
-        if self.__started_recording(tuner_id):
-            return Response("The tuner already started recording order!", status=400)
-
         query = """DELETE FROM record_information
             WHERE order_id = %s;        
             DELETE FROM record_orders 
@@ -239,19 +236,3 @@ class OrdersAPI:
 
         result = self.db_manager.run_query(query, args, return_result=True)
         return result
-
-    def __started_recording(self, order_id):
-        query = """SELECT start, stop
-            FROM record_orders
-            WHERE id = %s"""
-        args = [order_id]
-
-        result = self.db_manager.run_query(query, args)
-        if result:
-            (start, stop) = result[0]
-            ts = datetime.datetime.now().timestamp()
-            if ts < start:
-                return True
-            else:
-                return False
-        return True
