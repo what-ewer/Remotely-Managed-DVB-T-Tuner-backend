@@ -102,6 +102,8 @@ class OrdersAPI:
         if self.__is_recorded_already(tuner_id, order_id):
             return Response("The order is already recorded!", status=400)
 
+        self.heartbeat.ask_for_information(id, "changed_recording_order_list")
+
         query = """DELETE FROM record_information
             WHERE order_id = %s;        
             DELETE FROM record_orders 
