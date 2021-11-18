@@ -6,7 +6,6 @@ from src.database.db_model import (
     Orders,
     Channel,
     EPG,
-    TunerStatus,
     Settings,
     RecordedFiles,
 )
@@ -15,7 +14,6 @@ from src.api import (
     orders,
     channels,
     epg,
-    status,
     recorded,
     settings,
     tuner,
@@ -39,8 +37,7 @@ channels_api = channels.ChannelsAPI(db_manager)
 orders_api = orders.OrdersAPI(db_manager, channels_api, heartbeat_api)
 settings_api = settings.SettingsAPI(db_manager, heartbeat_api)
 epg_api = epg.EpgAPI(db_manager, heartbeat_api)
-status_api = status.StatusAPI(db_manager)
-recorded_api = recorded.RecordedAPI(db_manager)
+recorded_api = recorded.RecordedAPI(db_manager, heartbeat_api)
 tuner_api = tuner.TunerAPI(db_manager)
 favorites_api = favorites.FavoritesAPI(db_manager)
 api_executor = api_ex.APIExecutor(JsonConverter)
@@ -174,19 +171,6 @@ def post_epg():
 @auth.login_required
 def get_epg():
     return api_executor.execute_function(epg_api.get_epg, ["id"])
-
-
-# StatusAPI
-@app.route("/status", methods=["POST"])
-@auth.login_required
-def post_status():
-    return api_executor.execute_function(status_api.post_status, ["id"], TunerStatus)
-
-
-@app.route("/status", methods=["GET"])
-@auth.login_required
-def get_status():
-    return api_executor.execute_function(status_api.get_status, ["id"])
 
 
 # SettingsAPI

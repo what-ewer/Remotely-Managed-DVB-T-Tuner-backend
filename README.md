@@ -15,7 +15,6 @@
     |─ orders.py
     |─ recorded.py
     |─ settings.py
-    |─ status.py
     |─ tuner.py
   |─ auth/                 
     |─ auth.py
@@ -79,9 +78,6 @@ Currently avalible + planned endpoints
 | **EPG API**             |                        |       |                                                   |
 | `/epg`                  | id, body(EPG)          | POST  | post an EPG of a tuner                            | text
 | `/epg`                  | id                     | GET   | get an EPG of a tuner                             | [{EPG()}, {EPG()}, ..]
-| **Status API**          |                        |       |                                                   |
-| `/status`               | id, body(TunerStatus)  | POST  | post a status of a tuner                          | text
-| `/status`               | id                     | GET   | get a status of a tuner                           | {TunerStatus()}
 | **Settings API**        |                        |       |                                                   |
 | `/settings`             | id, body(Settings)     | POST  | post settings of a tuner                          | text
 | `/settings`             | id                     | GET   | get settings of a tuner                           | {Settings()}
