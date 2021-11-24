@@ -120,6 +120,7 @@ class EPG:
         channelName,
         channelUuid,
         channelNumber,
+        channelIcon,
         start,
         stop,
         title,

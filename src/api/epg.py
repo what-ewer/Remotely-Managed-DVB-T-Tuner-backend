@@ -35,9 +35,9 @@ class EpgAPI:
     def post_epg(self, id, epg):
         epg_dumped = json.dumps(epg).replace("'", "''")
         query = f"""UPDATE tuners
-            SET epg = '{epg_dumped}'
+            SET epg = %s
             WHERE id = %s"""
-        args = [id]
+        args = [epg_dumped, id]
 
         if self.db_manager.run_query(query, args, return_result=False):
             self.heartbeat.provide_information(id, "need_epg")

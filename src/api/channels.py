@@ -34,9 +34,9 @@ class ChannelsAPI:
 
     def post_channels(self, id, channels):
         query = f"""UPDATE tuners
-            SET channels = '{json.dumps(channels)}'
+            SET channels = %s
             WHERE id = %s"""
-        args = [id]
+        args = [{json.dumps(channels)}, id]
 
         if self.db_manager.run_query(query, args, return_result=False):
             return Response("Successfully updated channels", status=201)
