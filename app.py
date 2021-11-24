@@ -205,7 +205,9 @@ def get_recorded():
 @app.route("/heartbeat", methods=["GET"])
 @auth.login_required
 def get_hearbeat():
-    return api_executor.execute_function(heartbeat_api.get_heartbeat, ["id"])
+    return api_executor.execute_function(
+        heartbeat_api.get_heartbeat, ["id", "free_space"]
+    )
 
 
 @app.route("/heartbeat/ask", methods=["POST"])

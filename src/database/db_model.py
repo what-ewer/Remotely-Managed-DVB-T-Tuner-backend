@@ -46,7 +46,9 @@ class JsonConverter:
 
 
 class Settings:
-    def __init__(self, recording_location, free_space, tvh_username, tvh_password, **kwargs):
+    def __init__(
+        self, recording_location, free_space, tvh_username, tvh_password, **kwargs
+    ):
         self.recording_location = recording_location
         self.free_space = free_space
         self.tvh_username = tvh_username
