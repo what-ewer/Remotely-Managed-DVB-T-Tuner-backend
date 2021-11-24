@@ -34,7 +34,7 @@ class EpgAPI:
 
     def post_epg(self, id, epg):
         epg_dumped = json.dumps(epg).replace("'", "''")
-        query = f"""UPDATE tuners
+        query = """UPDATE tuners
             SET epg = %s
             WHERE id = %s"""
         args = [epg_dumped, id]
