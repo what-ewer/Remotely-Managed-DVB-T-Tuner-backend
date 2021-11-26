@@ -128,8 +128,8 @@ class TunerAPI:
         return self.db_manager.run_query(query, args, return_id=True)
 
     def __add_tuner_related_information(self, tuner_id):
-        query = """INSERT INTO settings (tuner_id, recording_location, tvh_username, tvh_password)
-            VALUES(%s, '/recordings', '', '')
+        query = """INSERT INTO settings (tuner_id, recording_location, free_space, tvh_username, tvh_password)
+            VALUES(%s, '/recordings', 0, '', '')
             RETURNING tuner_id;
             """
         query2 = """INSERT INTO information_needed (tuner_id, changed_recording_order_list, changed_settings, need_recording_file_list, need_epg)
