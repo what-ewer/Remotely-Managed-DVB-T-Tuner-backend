@@ -26,15 +26,14 @@ class SettingsAPI:
             return Response("Something went wrong", status=500)
 
     def post_settings(self, id, settings):
-        query = """"
-                UPDATE settings
+        query = """UPDATE settings
                 SET recording_location = %s, tvh_username = %s, tvh_password = %s
                 WHERE tuner_id = %s"""
         args = [
             settings.recording_location,
             settings.tvh_username,
             settings.tvh_password,
-            id,
+            id
         ]
 
         if self.db_manager.run_query(query, args, return_result=False):
