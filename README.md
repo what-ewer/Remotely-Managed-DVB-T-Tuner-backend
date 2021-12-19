@@ -67,8 +67,8 @@ Currently avalible + planned endpoints
 | `/tuner/invite/accept`  | user, tuner_id         | POST  | accept invite to a tuner                          | text
 | `/tuner/invite/decline` | user, tuner_id         | POST  | decline invite to a tuner                         | text
 | `/tuner/users/remove`   | user, tuner_id         | POST  | remove user from a tuner                          | text
-| `/tuner/users/list`     | tuner_id               | POST  | get list of users of a tuner                      | [[id, user, role], ...]
-| `/tuner/list`           |                        | POST  | get list of tuners of a user                      | [[id, tuner, role], ...] 
+| `/tuner/users/list`     | tuner_id               | GET   | get list of users of a tuner                      | [[id, user, role], ...]
+| `/tuner/list`           |                        | GET   | get list of tuners of a user                      | [[id, tuner, role], ...] 
 | **Order API**           |                        |       |                                                   |
 | `/orders`               | id, body(Orders)       | POST  | post a list of orders of a tuner                  | {"ids": [id, id, ..], "msg": text}
 | `/orders`               | id                     | GET   | get a list of orders of a tuner                   | [{RecordInformation()}, {RecordInformation()}, ..]
