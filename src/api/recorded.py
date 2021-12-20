@@ -4,8 +4,9 @@ from src.database.db_model import RecordInformation
 
 
 class RecordedAPI:
-    def __init__(self, db_manager):
+    def __init__(self, db_manager, heartbeat_api):
         self.db_manager = db_manager
+        self.heartbeat = heartbeat_api
 
     def get_recorded(self, id):
         query = """SELECT ri.order_id,
@@ -45,6 +46,7 @@ class RecordedAPI:
         recorded_ids = [o.order_id for o in recorded]
         if not self.__remove_deleted_recorded(id, recorded_ids):
             return Response("Something went wrong", status=500)
+        self.heartbeat.ask_for_information(id, "changed_settings")
         for o in recorded:
             if self.__order_with_id_exists(o.order_id):
                 if not self.__recorded_exists(o.order_id):

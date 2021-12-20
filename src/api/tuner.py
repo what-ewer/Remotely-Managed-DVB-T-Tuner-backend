@@ -128,24 +128,19 @@ class TunerAPI:
         return self.db_manager.run_query(query, args, return_id=True)
 
     def __add_tuner_related_information(self, tuner_id):
-        query = """INSERT INTO settings (tuner_id, recording_location, tvh_username, tvh_password)
-            VALUES(%s, '/recordings', '', '')
+        query = """INSERT INTO settings (tuner_id, recording_location, free_space, tvh_username, tvh_password)
+            VALUES(%s, '/recordings', 0, '', '')
             RETURNING tuner_id;
             """
         query2 = """INSERT INTO information_needed (tuner_id, changed_recording_order_list, changed_settings, need_recording_file_list, need_epg)
             VALUES(%s, True, True, True, True)
             RETURNING tuner_id;
             """
-        query3 = """INSERT INTO tuner_status (tuner_id, free_space, is_recording, current_recording_time, current_recording_size)
-            VALUES(%s, 0, False, 0, 0)
-            RETURNING tuner_id;"""
         args = [tuner_id]
 
-        return (
-            self.db_manager.run_query(query, args, return_id=True)
-            and self.db_manager.run_query(query2, args, return_id=True)
-            and self.db_manager.run_query(query3, args, return_id=True)
-        )
+        return self.db_manager.run_query(
+            query, args, return_id=True
+        ) and self.db_manager.run_query(query2, args, return_id=True)
 
     def __user_already_added(self, username, tuner_id):
         query = """SELECT user_id, tuner_id, role

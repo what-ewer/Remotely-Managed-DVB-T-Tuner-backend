@@ -9,7 +9,7 @@ class SettingsAPI:
         self.heartbeat = heartbeat_api
 
     def get_settings(self, id):
-        query = """SELECT recording_location, tvh_username, tvh_password 
+        query = """SELECT recording_location, free_space, tvh_username, tvh_password 
             FROM settings
             WHERE tuner_id = %s"""
         args = [id]
@@ -26,17 +26,14 @@ class SettingsAPI:
             return Response("Something went wrong", status=500)
 
     def post_settings(self, id, settings):
-        query = """INSERT INTO settings(tuner_id, recording_location, tvh_username, tvh_password)
-            VALUES(%s, %s, %s, %s)
-            ON CONFLICT(tuner_id)
-            DO
-                UPDATE SET (recording_location, tvh_username, tvh_password)
-                = (EXCLUDED.recording_location, EXCLUDED.tvh_username, EXCLUDED.tvh_password)"""
+        query = """UPDATE settings
+                SET recording_location = %s, tvh_username = %s, tvh_password = %s
+                WHERE tuner_id = %s"""
         args = [
-            id,
             settings.recording_location,
             settings.tvh_username,
             settings.tvh_password,
+            id
         ]
 
         if self.db_manager.run_query(query, args, return_result=False):

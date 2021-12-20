@@ -7,7 +7,7 @@ class HeartbeatAPI:
     def __init__(self, db_manager):
         self.db_manager = db_manager
 
-    def get_heartbeat(self, tuner_id):
+    def get_heartbeat(self, tuner_id, free_space):
         query = """SELECT changed_recording_order_list, changed_settings,
             need_recording_file_list, need_epg
             FROM information_needed
@@ -16,6 +16,7 @@ class HeartbeatAPI:
 
         result = self.db_manager.run_query(query, args)
         if result:
+            self.__update_free_space(tuner_id, free_space)
             heartbeat = InformationNeeded(*result[0])
             return Response(
                 json.dumps(heartbeat, default=lambda o: o.__dict__, indent=4),
@@ -68,5 +69,14 @@ class HeartbeatAPI:
             WHERE tuner_id = %s
             """
         args = [val, tuner_id]
+
+        return self.db_manager.run_query(query, args, return_result=False)
+
+    def __update_free_space(self, tuner_id, free_space):
+        query = """UPDATE settings
+            SET free_space = %s
+            WHERE tuner_id = %s
+            """
+        args = [free_space, tuner_id]
 
         return self.db_manager.run_query(query, args, return_result=False)

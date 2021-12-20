@@ -90,7 +90,9 @@ class DBManager:
             return return_on_error
         return query_result if return_result else return_on_success
 
-    def __execute_query(self, query, get_inserted_id=False, return_result=True, args=()):
+    def __execute_query(
+        self, query, get_inserted_id=False, return_result=True, args=()
+    ):
         cur = self.conn.cursor()
         cur.execute(query, args)
         res = ""

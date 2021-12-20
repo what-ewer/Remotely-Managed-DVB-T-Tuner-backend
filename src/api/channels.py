@@ -33,10 +33,11 @@ class ChannelsAPI:
             return Response("Something went wrong", status=500)
 
     def post_channels(self, id, channels):
-        query = f"""UPDATE tuners
-            SET channels = '{json.dumps(channels)}'
+        channels_dumped = json.dumps(channels).replace("'", "''")
+        query = """UPDATE tuners
+            SET channels = %s
             WHERE id = %s"""
-        args = [id]
+        args = [channels_dumped, id]
 
         if self.db_manager.run_query(query, args, return_result=False):
             return Response("Successfully updated channels", status=201)

@@ -45,24 +45,12 @@ class JsonConverter:
         return json_body
 
 
-class TunerStatus:
-    def __init__(
-        self,
-        free_space,
-        is_recording,
-        current_recording_time,
-        current_recording_size,
-        **kwargs
-    ):
-        self.free_space = free_space
-        self.is_recording = is_recording
-        self.current_recording_time = current_recording_time
-        self.current_recording_size = current_recording_size
-
-
 class Settings:
-    def __init__(self, recording_location, tvh_username, tvh_password, **kwargs):
+    def __init__(
+        self, recording_location, free_space, tvh_username, tvh_password, **kwargs
+    ):
         self.recording_location = recording_location
+        self.free_space = free_space
         self.tvh_username = tvh_username
         self.tvh_password = tvh_password
 
@@ -132,6 +120,7 @@ class EPG:
         channelName,
         channelUuid,
         channelNumber,
+        channelIcon,
         start,
         stop,
         title,
