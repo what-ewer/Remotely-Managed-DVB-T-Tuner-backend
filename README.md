@@ -54,7 +54,7 @@ black .
 
 ## Endpoints
 
-Currently avalible + planned endpoints
+Avalible endpoints
 | endpoint                |  arguments             | type  | description                                       | returned values
 | -                       | -                      | -     | -                                                 |  - 
 | **Auth API**            |                        |       |                                                   |
