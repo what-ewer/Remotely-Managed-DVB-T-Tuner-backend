@@ -1,7 +1,0 @@
-CREATE TABLE IF NOT EXISTS tuners (
-    id serial NOT NULL,
-    tuner_name varchar(255),
-    epg text,
-    channels text,
-    PRIMARY KEY (id)
-);

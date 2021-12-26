@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS user_tuners (
 CREATE TABLE IF NOT EXISTS settings (
     tuner_id integer NOT NULL,
     recording_location varchar(255),
-    free_space int,
+    free_space bigint,
     tvh_username varchar(255),
     tvh_password varchar(255), 
     PRIMARY KEY (tuner_id),

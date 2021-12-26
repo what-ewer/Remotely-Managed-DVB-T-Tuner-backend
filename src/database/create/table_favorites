@@ -1,9 +1,0 @@
-CREATE TABLE IF NOT EXISTS favorites (
-    id serial NOT NULL,
-    user_id integer NOT NULL,
-    favorite varchar(255),
-    series boolean NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (user_id)
-        REFERENCES users (id)
-);
